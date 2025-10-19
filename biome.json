@@ -92,13 +92,24 @@
         },
         {
             "includes": [
-                "**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro}"
+                "**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro,css}"
             ],
             "linter": {
                 "rules": {
                     "style": {
                         "noDefaultExport": "off",
                         "useFilenamingConvention": "off"
+                    },
+                    "nursery": {
+                        "useExplicitType": "off",
+                        "noSecrets": "off"
+                    },
+                    "suspicious": {
+                        "noUnknownAtRules": "off",
+                        "noReactSpecificProps": "off"
+                    },
+                    "correctness": {
+                        "useImportExtensions": "off"
                     }
                 }
             }
