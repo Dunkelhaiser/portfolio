@@ -1,14 +1,22 @@
 {
-  "name": "",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^5.14.6"
-  }
+    "name": "portfolio",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro",
+        "typecheck": "tsc --noEmit",
+        "check": "biome check --write && pnpm typecheck"
+    },
+    "dependencies": {
+        "astro": "^5.14.6"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.2.6",
+        "@commitlint/cli": "^20.1.0",
+        "@commitlint/config-conventional": "^20.0.0",
+        "lefthook": "^1.13.6"
+    }
 }
