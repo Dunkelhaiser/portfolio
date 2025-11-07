@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
     "vcs": {
         "enabled": true,
         "clientKind": "git",
@@ -49,6 +49,11 @@
             "quoteProperties": "asNeeded"
         }
     },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
     "json": {
         "formatter": {
             "enabled": true,
@@ -85,7 +90,8 @@
                         "noUnusedImports": "off"
                     },
                     "nursery": {
-                        "noUnresolvedImports": "off"
+                        "noUnresolvedImports": "off",
+                        "noEmptySource": "off"
                     }
                 }
             }
@@ -101,7 +107,9 @@
                         "useFilenamingConvention": "off"
                     },
                     "nursery": {
-                        "useExplicitType": "off",
+                        "useExplicitType": "off"
+                    },
+                    "security": {
                         "noSecrets": "off"
                     },
                     "suspicious": {
