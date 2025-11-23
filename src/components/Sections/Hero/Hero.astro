@@ -1,0 +1,51 @@
+---
+import { BriefcaseBusiness, Cake, ExternalLink, Github, GraduationCap, Linkedin, Mail, MapPin } from "lucide-react";
+import BioKey from "./BioKey.astro";
+import BioLink from "./BioLink.astro";
+---
+
+<section class="grid gap-2 gap-8 lg:grid-cols-2 items-center xl:h-screen">
+    <div>
+        <p class="text-xl font-mono text-center lg:text-left">Full-Stack Web Developer</p>
+        <h1 class="text-5xl lg:text-7xl font-bold text-center lg:text-left">Kyrylo Tymchyshyn</h1>
+        <div class="mt-8 flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start">
+            <BioKey icon={MapPin} text="Lviv, Ukraine" />
+            <BioKey icon={Cake} text={`${new Date().getFullYear() - 2004} years`} />
+            <BioKey icon={BriefcaseBusiness} text="1 year of experience" />
+            <BioKey icon={GraduationCap} text="Computer Science Bachelor" />
+        </div>
+        <div class="mt-5 flex items-center gap-2 max-lg:flex-col lg:gap-3">
+            <div class="flex items-center gap-2 lg:gap-3">
+                <BioLink
+                    href="/Resume.pdf"
+                    text="Resume"
+                    variant="default"
+                    icon={ExternalLink}
+                />
+                <BioLink
+                    href="mailto:tymchyshynkyrylo@gmail.com?subject=Portfolio%20Contact"
+                    text="Contact"
+                    target="_self"
+                    icon={Mail}
+                />
+            </div>
+            <div class="flex items-center gap-2 lg:gap-3">
+                <BioLink
+                    href="https://www.linkedin.com/in/kyrylo-tymchyshyn/"
+                    icon={Linkedin}
+                    size="icon-lg"
+                    ariaLabel="LinkedIn"
+                    iconSize="size-6"
+                />
+                <BioLink
+                    href="https://github.com/Dunkelhaiser"
+                    icon={Github}
+                    size="icon-lg"
+                    ariaLabel="GitHub"
+                    iconSize="size-6"
+                />
+            </div>
+        </div>
+    </div>
+    <img src="/Avatar.png" alt="Photo of Me" class="w-full max-w-md lg:max-w-lg rounded-lg shadow-lg mx-auto lg:ml-auto" />
+</section>

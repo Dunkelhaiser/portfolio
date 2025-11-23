@@ -1,0 +1,15 @@
+---
+import type { LucideIcon } from "lucide-react";
+
+interface Props {
+    icon: LucideIcon;
+    text: string;
+}
+
+const { icon: Icon, text } = Astro.props;
+---
+
+<div class="flex items-center gap-2">
+    <Icon />
+    <span class="text-lg">{text}</span>
+</div>
