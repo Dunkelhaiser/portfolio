@@ -18,6 +18,15 @@
         "lineWidth": 120,
         "expand": "always"
     },
+    "html": {
+        "formatter": {
+            "enabled": true,
+            "indentStyle": "space",
+            "bracketSameLine": false,
+            "indentWidth": 4,
+            "lineWidth": 120
+        }
+    },
     "linter": {
         "enabled": true,
         "rules": {
@@ -28,7 +37,6 @@
             "security": "error",
             "a11y": "error",
             "complexity": "error",
-            "nursery": "error",
             "suspicious": "error"
         }
     },
@@ -88,10 +96,6 @@
                     "correctness": {
                         "noUnusedVariables": "off",
                         "noUnusedImports": "off"
-                    },
-                    "nursery": {
-                        "noUnresolvedImports": "off",
-                        "noEmptySource": "off"
                     }
                 }
             }
@@ -105,9 +109,6 @@
                     "style": {
                         "noDefaultExport": "off",
                         "useFilenamingConvention": "off"
-                    },
-                    "nursery": {
-                        "useExplicitType": "off"
                     },
                     "security": {
                         "noSecrets": "off"
