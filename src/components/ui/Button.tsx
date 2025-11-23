@@ -19,10 +19,10 @@ const buttonVariants = cva(
             size: {
                 default: "h-9 px-4 py-2 has-[>svg]:px-3",
                 sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-                lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+                lg: "h-12 rounded-md px-6 !text-lg",
                 icon: "size-9",
                 "icon-sm": "size-8",
-                "icon-lg": "size-10",
+                "icon-lg": "size-12",
             },
         },
         defaultVariants: {
@@ -59,4 +59,5 @@ function Button({
     );
 }
 
-export { Button };
+// biome-ignore lint/style/useComponentExportOnlyModules: only for Button
+export { Button, buttonVariants };
