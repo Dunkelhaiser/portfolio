@@ -1,5 +1,7 @@
 ---
 import Header from "@/components/Header/Header";
+
+const umamiId = import.meta.env.PUBLIC_UMAMI_ID;
 ---
 
 <!doctype html>
@@ -10,6 +12,7 @@ import Header from "@/components/Header/Header";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Kyrylo Tymchyshyn | Personal Portfolio</title>
+        <script defer is:inline src="https://cloud.umami.is/script.js" data-website-id={umamiId}></script>
         <script is:inline>
             const getThemePreference = () => {
                 if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
