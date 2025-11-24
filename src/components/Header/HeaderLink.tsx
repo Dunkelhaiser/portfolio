@@ -1,8 +1,10 @@
 // biome-ignore-all lint/style/useNamingConvention: Icon names match Lucide exports
+
 import { Briefcase, Code, FolderGit, GraduationCap, Home, type LucideIcon, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/Tooltip";
+import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
     Home,
@@ -19,9 +21,10 @@ interface Props {
         href: string;
         icon: string;
     };
+    isActive?: boolean;
 }
 
-const HeaderLink = ({ item: { name, href, icon } }: Props) => {
+const HeaderLink = ({ item: { name, href, icon }, isActive }: Props) => {
     const Icon = iconMap[icon];
     const [isMobile, setIsMobile] = useState(false);
 
@@ -39,10 +42,15 @@ const HeaderLink = ({ item: { name, href, icon } }: Props) => {
             <TooltipTrigger asChild>
                 <a
                     href={href}
-                    className={buttonVariants({
-                        variant: "ghost",
-                        size: "icon",
-                    })}
+                    className={cn(
+                        buttonVariants({
+                            variant: "ghost",
+                            size: "icon",
+                        }),
+                        isActive
+                            ? "bg-sky-800 dark:bg-primary text-primary-foreground hover:bg-sky-800 dark:hover:bg-primary"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
                     aria-label={name}
                 >
                     <Icon className="size-5.5" />
