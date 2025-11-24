@@ -121,6 +121,9 @@
                     "correctness": {
                         "useImportExtensions": "off",
                         "noSolidDestructuredProps": "off"
+                    },
+                    "performance": {
+                        "useSolidForComponent": "off"
                     }
                 }
             }
