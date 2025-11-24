@@ -10,7 +10,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<div class="relative border-l border-border ml-3 space-y-10 w-full max-w-3xl mx-auto mt-4">
+<div class="relative border-l border-border ml-3 space-y-10 w-full max-w-3xl sm:mx-auto mt-4">
     {
         items.map((item, index) => (
             <div class={cn("ml-8 relative", index !== items.length - 1 ? "mb-10" : "mb-1")}>
