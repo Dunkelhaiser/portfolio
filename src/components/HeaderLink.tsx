@@ -2,6 +2,7 @@
 import { Briefcase, Code, FolderGit, GraduationCap, Home, type LucideIcon, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/Tooltip";
+import { buttonVariants } from "./ui/Button";
 
 const iconMap: Record<string, LucideIcon> = {
     Home,
@@ -38,7 +39,10 @@ const HeaderLink = ({ item: { name, href, icon } }: Props) => {
             <TooltipTrigger asChild>
                 <a
                     href={href}
-                    className="p-2 rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
+                    className={buttonVariants({
+                        variant: "ghost",
+                        size: "icon",
+                    })}
                     aria-label={name}
                 >
                     <Icon className="size-5.5" />

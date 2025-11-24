@@ -1,5 +1,6 @@
 ---
 import HeaderLink from "./HeaderLink";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
     {
@@ -36,12 +37,12 @@ const navItems = [
 ---
 
 <header
-    class="fixed z-50 p-1.5 bg-background/80 backdrop-blur-md border border-border shadow-lg rounded-lg flex gap-2 bottom-6 left-1/2 -translate-x-1/2 flex-row md:right-6 md:top-1/2 md:-translate-y-1/2 md:flex-col md:bottom-auto md:left-auto md:translate-x-0"
+    class="fixed z-50 p-1.5 bg-background/80 dark:bg-card backdrop-blur-md border border-border shadow-lg rounded-lg flex gap-2 bottom-6 left-1/2 -translate-x-1/2 flex-row md:right-6 md:top-1/2 md:-translate-y-1/2 md:flex-col md:bottom-auto md:left-auto md:translate-x-0"
 >
     <nav class="flex md:flex-col gap-2">
-        {
-            navItems.map((item) => <HeaderLink item={item} client:load />)
-        }
+        {navItems.map((item) => <HeaderLink item={item} client:load />)}
+        <div class="w-px h-6 bg-border md:w-6 md:h-px mx-auto my-auto"></div>
+        <ThemeToggle client:load />
     </nav>
 </header>
 
@@ -52,12 +53,24 @@ const navItems = [
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute("id");
                     document.querySelectorAll("nav a").forEach((link) => {
-                        link.classList.remove("bg-sky-800", "text-primary-foreground", "hover:bg-sky-800");
+                        link.classList.remove(
+                            "bg-sky-800",
+                            "dark:bg-primary",
+                            "text-primary-foreground",
+                            "hover:bg-sky-800",
+                            "dark:hover:bg-primary"
+                        );
                         link.classList.add("text-muted-foreground", "hover:bg-muted", "hover:text-foreground");
 
                         if (link.getAttribute("href") === `#${id}`) {
                             link.classList.remove("text-muted-foreground", "hover:bg-muted", "hover:text-foreground");
-                            link.classList.add("bg-sky-800", "text-primary-foreground", "hover:bg-sky-800");
+                            link.classList.add(
+                                "bg-sky-800",
+                                "dark:bg-primary",
+                                "text-primary-foreground",
+                                "hover:bg-sky-800",
+                                "dark:hover:bg-primary"
+                            );
                         }
                     });
                 }
