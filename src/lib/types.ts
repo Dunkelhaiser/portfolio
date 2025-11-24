@@ -3,3 +3,12 @@ export interface Skill {
     icon: string;
     link?: string;
 }
+
+export interface TimelineItem {
+    date: string;
+    title: string;
+    subtitle: string;
+    logo?: string;
+    description?: string;
+    link?: string;
+}
