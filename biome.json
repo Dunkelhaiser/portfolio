@@ -108,7 +108,8 @@
                 "rules": {
                     "style": {
                         "noDefaultExport": "off",
-                        "useFilenamingConvention": "off"
+                        "useFilenamingConvention": "off",
+                        "noImplicitBoolean": "off"
                     },
                     "security": {
                         "noSecrets": "off"
@@ -118,7 +119,8 @@
                         "noReactSpecificProps": "off"
                     },
                     "correctness": {
-                        "useImportExtensions": "off"
+                        "useImportExtensions": "off",
+                        "noSolidDestructuredProps": "off"
                     }
                 }
             }
