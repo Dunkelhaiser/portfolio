@@ -11,8 +11,8 @@ const { items } = Astro.props;
 
 <div class="relative border-l border-border ml-3 space-y-10 w-full max-w-3xl mx-auto mt-4">
     {
-        items.map((item) => (
-            <div class="mb-10 ml-8 relative">
+        items.map((item, index) => (
+            <div class={cn("ml-8 relative", index !== items.length - 1 ? "mb-10" : "mb-1")}>
                 <span
                     class={cn(
                         "absolute flex bg-background items-center justify-center w-10 h-10 rounded-full -left-[52px] ring-4 ring-background border border-border",
