@@ -25,7 +25,7 @@ const { items } = Astro.props;
                         <div class="w-3 h-3 bg-primary rounded-full" />
                     )}
                 </span>
-                <p class="text-sm font-normal text-muted-foreground">{item.date}</p>
+                {item.date && <p class="text-sm font-normal text-muted-foreground">{item.date}</p>}
                 <h3 class="text-lg font-semibold text-foreground">
                     {item.link ? (
                         <a
@@ -40,7 +40,7 @@ const { items } = Astro.props;
                         item.title
                     )}
                 </h3>
-                <p class="text-base font-medium text-foreground mb-2 mt-1">{item.subtitle}</p>
+                {item.subtitle && <p class="text-base font-medium text-foreground mb-2 mt-1">{item.subtitle}</p>}
                 <p class="text-base font-normal text-muted-foreground">{item.description}</p>
             </div>
         ))

@@ -5,9 +5,9 @@ export interface Skill {
 }
 
 export interface TimelineItem {
-    date: string;
+    date?: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     logo?: string;
     description?: string;
     link?: string;
