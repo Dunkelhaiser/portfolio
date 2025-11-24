@@ -1,0 +1,56 @@
+---
+import { ExternalLink, Github } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { buttonVariants } from "@/components/ui/Button";
+import type { Project } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+interface Props {
+    project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<div class="flex flex-col border border-border rounded-lg overflow-hidden bg-card h-full">
+    {project.image && <img class="border-b border-border" src={project.image} alt={project.name} />}
+    <div class="flex flex-col flex-1 p-6 gap-4">
+        <div class="flex flex-wrap gap-2">
+            {project.tags.map((tag) => <Badge variant="secondary">{tag}</Badge>)}
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <h3 class="text-xl font-semibold text-foreground">{project.name}</h3>
+            <p class="text-muted-foreground text-sm">{project.description}</p>
+        </div>
+
+        <div class="flex gap-2 mt-auto">
+            {
+                project.link && (
+                    <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={cn(buttonVariants({ variant: "default", size: "sm" }), "gap-2")}
+                    >
+                        <ExternalLink className="size-4" />
+                        Live
+                    </a>
+                )
+            }
+            {
+                project.repo && (
+                    <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-2")}
+                    >
+                        <Github className="size-4" />
+                        Repo
+                    </a>
+                )
+            }
+        </div>
+    </div>
+</div>
