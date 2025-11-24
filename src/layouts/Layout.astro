@@ -1,3 +1,7 @@
+---
+import Header from "@/components/Header.astro";
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -7,7 +11,10 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Kyrylo Tymchyshyn | Personal Portfolio</title>
 	</head>
-	<body class="flex flex-col max-w-7xl mx-auto px-5 sm:px-10 pb-6 md:pb-8 pt-12 md:pt-24 gap-18 sm:gap-24">
-		<slot />
+	<body class="bg-background text-foreground">
+        <Header />
+        <main class="flex flex-col max-w-7xl mx-auto px-5 sm:px-10 pt-12 pb-24 md:pt-24 md:pb-8 gap-18 sm:gap-24">
+		    <slot />
+        </main>
 	</body>
 </html>
