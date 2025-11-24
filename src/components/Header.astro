@@ -1,36 +1,36 @@
 ---
-import { Briefcase, Code, FolderGit, GraduationCap, Home, User } from "lucide-react";
+import HeaderLink from "./HeaderLink";
 
 const navItems = [
     {
         name: "Home",
         href: "#hero",
-        icon: Home,
+        icon: "Home",
     },
     {
         name: "About",
         href: "#about",
-        icon: User,
+        icon: "User",
     },
     {
         name: "Skills",
         href: "#skills",
-        icon: Code,
+        icon: "Code",
     },
     {
         name: "Experience",
         href: "#experience",
-        icon: Briefcase,
+        icon: "Briefcase",
     },
     {
         name: "Education",
         href: "#education",
-        icon: GraduationCap,
+        icon: "GraduationCap",
     },
     {
         name: "Projects",
         href: "#projects",
-        icon: FolderGit,
+        icon: "FolderGit",
     },
 ];
 ---
@@ -40,15 +40,7 @@ const navItems = [
 >
     <nav class="flex md:flex-col gap-2">
         {
-            navItems.map((item) => (
-                <a
-                    href={item.href}
-                    class="p-2 rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
-                    aria-label={item.name}
-                >
-                    <item.icon className="size-5.5" />
-                </a>
-            ))
+            navItems.map((item) => <HeaderLink item={item} client:load />)
         }
     </nav>
 </header>
@@ -62,7 +54,7 @@ const navItems = [
                     document.querySelectorAll("nav a").forEach((link) => {
                         link.classList.remove("bg-sky-800", "text-primary-foreground", "hover:bg-sky-800");
                         link.classList.add("text-muted-foreground", "hover:bg-muted", "hover:text-foreground");
-                        
+
                         if (link.getAttribute("href") === `#${id}`) {
                             link.classList.remove("text-muted-foreground", "hover:bg-muted", "hover:text-foreground");
                             link.classList.add("bg-sky-800", "text-primary-foreground", "hover:bg-sky-800");
@@ -72,8 +64,8 @@ const navItems = [
             });
         },
         {
-            rootMargin: "-100px 0px -60% 0px",
-        },
+            rootMargin: "-100px 0px -60% 0px"
+        }
     );
 
     document.querySelectorAll("section[id]").forEach((section) => observer.observe(section));
