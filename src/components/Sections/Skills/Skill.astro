@@ -1,0 +1,20 @@
+---
+import { buttonVariants } from "@/components/ui/Button";
+import type { Skill } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+interface Props {
+    skill: Skill;
+}
+
+const {
+    skill: { name, icon, link },
+} = Astro.props;
+---
+
+<a
+    href={link} target="_blank" rel="noopener noreferrer" aria-label={name}
+    class={cn(buttonVariants({ variant: "outline", size: "icon-lg" }), "p-2.5 size-auto")}
+>
+    <img src={icon} alt={`${name} Logo`} class="size-12" />
+</a>

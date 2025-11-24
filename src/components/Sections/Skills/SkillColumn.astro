@@ -1,0 +1,24 @@
+---
+import type { LucideIcon } from "lucide-react";
+import type { Skill as SkillType } from "@/lib/types";
+import Skill from "./Skill.astro";
+
+interface Props {
+    title: string;
+    icon: LucideIcon;
+    className?: string;
+    skills: SkillType[];
+}
+
+const { title, icon: Icon, className, skills } = Astro.props;
+---
+
+<div class={className}>
+    <div class="flex flex-col items-center">
+        <Icon />
+        <h3 class="text-xl font-medium">{title}</h3>
+    </div>
+    <div class="mt-4 flex flex-wrap justify-center gap-4">
+        {skills.map((skill) => <Skill skill={skill} />)}
+    </div>
+</div>
