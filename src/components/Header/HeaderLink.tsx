@@ -1,8 +1,8 @@
 // biome-ignore-all lint/style/useNamingConvention: Icon names match Lucide exports
 import { Briefcase, Code, FolderGit, GraduationCap, Home, type LucideIcon, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { buttonVariants } from "@/components/ui/Button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/Tooltip";
-import { buttonVariants } from "./ui/Button";
 
 const iconMap: Record<string, LucideIcon> = {
     Home,
