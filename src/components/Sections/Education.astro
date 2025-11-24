@@ -1,4 +1,8 @@
 ---
+import School63 from "@/assets/icons/education/63.png";
+import LAG from "@/assets/icons/education/lag.jpg";
+import LNU from "@/assets/icons/education/lnu.png";
+import Udemy from "@/assets/icons/education/udemy.svg";
 import Section from "@/components/Section.astro";
 import Timeline from "@/components/Timeline.astro";
 import type { TimelineItem } from "@/lib/types";
@@ -9,7 +13,7 @@ const education: TimelineItem[] = [
         subtitle: "Faculty of Electronics and Computer Technologies",
         date: "September 2025 - December 2026",
         description: "Pursuing a Master's degree in Computer Science.",
-        logo: "/icons/education/lnu.png",
+        logo: LNU,
         link: "https://lnu.edu.ua/",
     },
     {
@@ -17,27 +21,27 @@ const education: TimelineItem[] = [
         subtitle: "Faculty of Electronics and Computer Technologies",
         date: "September 2021 - June 2025",
         description: "I hold a Bachelor's degree in Computer Science.",
-        logo: "/icons/education/lnu.png",
+        logo: LNU,
         link: "https://lnu.edu.ua/",
     },
     {
         title: "Lviv Academic Gymnasium",
         date: "September 2018 - June 2021",
         description: "It was my second school where I studied from 8th till 11th class.",
-        logo: "/icons/education/lag.jpg",
+        logo: LAG,
         link: "https://lag.lviv.ua/",
     },
     {
         title: "Secondary High School №63",
         date: "September 2011 - June 2018",
         description: "It was my first school where I studied up to 7th class.",
-        logo: "/icons/education/63.png",
+        logo: School63,
         link: "https://www.school63.school.social/",
     },
     {
         title: "Udemy",
         description: "Place where I study a lot of different topics.",
-        logo: "/icons/education/udemy.svg",
+        logo: Udemy,
     },
 ];
 ---

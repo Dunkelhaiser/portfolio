@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import { buttonVariants } from "@/components/ui/Button";
 import type { Skill } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -16,5 +17,5 @@ const {
     href={link} target="_blank" rel="noopener noreferrer" aria-label={name}
     class={cn(buttonVariants({ variant: "outline", size: "icon-lg" }), "p-2.5 size-auto dark:bg-zinc-200 dark:hover:bg-zinc-50")}
 >
-    <img src={icon} alt={`${name} Logo`} class="size-12" />
+    <Image src={icon} alt={`${name} Logo`} class="size-12" />
 </a>

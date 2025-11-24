@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import { BriefcaseBusiness, Cake, ExternalLink, Github, GraduationCap, Linkedin, Mail, MapPin } from "lucide-react";
+import Avatar from "@/assets/Avatar.png";
 import BioKey from "./BioKey.astro";
 import BioLink from "./BioLink.astro";
 ---
@@ -47,5 +49,5 @@ import BioLink from "./BioLink.astro";
             </div>
         </div>
     </div>
-    <img src="/Avatar.png" alt="Me" class="w-full max-w-md lg:max-w-lg rounded-lg shadow-lg mx-auto lg:ml-auto" />
+    <Image src={Avatar} alt="Me" class="w-full max-w-md lg:max-w-lg rounded-lg shadow-lg mx-auto lg:ml-auto" loading="eager" />
 </section>

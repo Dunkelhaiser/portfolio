@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import type { TimelineItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,7 @@ const { items } = Astro.props;
                     )}
                 >
                     {item.logo ? (
-                        <img src={item.logo} alt={`${item.title} Logo`} class="w-9 h-9 rounded" />
+                        <Image src={item.logo} alt={`${item.title} Logo`} class="w-9 h-9 rounded" />
                     ) : (
                         <div class="w-3 h-3 bg-primary rounded-full" />
                     )}
