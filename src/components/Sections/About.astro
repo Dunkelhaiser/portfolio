@@ -1,12 +1,15 @@
-<section class="flex flex-col items-center gap-3">
-    <h2 class="text-3xl font-bold md:text-4xl">About Me</h2>
+---
+import Section from "@/components/Section.astro";
+---
+
+<Section title="About Me">
     <p class="prose prose-zinc dark:prose-invert text-center text-lg">
         My name is Kyrylo, and I'm {`${new Date().getFullYear() - 2004} years`} old. I hold a Bachelor's degree in Computer Science from the Ivan Franko
         National University of Lviv, and I'm currently pursuing a Master's degree. I became interested in programming at the age of 12. My first program was written in C++, but I
         found my passion in web development, as I can make programs that anyone can access without any pain. I'm positioning
         myself as a full-stack developer with my core stack being React/Next.js, Node.js, TypeScript, and PostgreSQL.
     </p>
-    <p class="prose prose-zinc dark:prose-invert text-center text-lg">
+    <p class="prose prose-zinc dark:prose-invert text-center text-lg mt-3">
         Aside from programming and technology-related stuff, I love history and enjoy playing chess, and have a second-class chess rank.
     </p>
-</section>
+</Section>
