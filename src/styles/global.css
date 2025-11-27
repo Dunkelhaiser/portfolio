@@ -123,6 +123,7 @@
         scroll-behavior: smooth;
     }
     body {
+        font-family: "Montserrat Variable", sans-serif;
         @apply bg-background text-foreground;
     }
 }
