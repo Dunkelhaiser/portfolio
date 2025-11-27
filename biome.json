@@ -16,7 +16,7 @@
         "formatWithErrors": true,
         "indentWidth": 4,
         "lineWidth": 120,
-        "expand": "always"
+        "expand": "auto"
     },
     "html": {
         "formatter": {
@@ -48,7 +48,7 @@
             "trailingCommas": "es5",
             "indentWidth": 4,
             "lineWidth": 120,
-            "expand": "always",
+            "expand": "auto",
             "indentStyle": "space",
             "jsxQuoteStyle": "double",
             "semicolons": "always",
@@ -69,7 +69,7 @@
             "bracketSpacing": true,
             "indentWidth": 4,
             "lineWidth": 120,
-            "expand": "always",
+            "expand": "auto",
             "indentStyle": "space"
         }
     },
@@ -83,11 +83,7 @@
     },
     "overrides": [
         {
-            "includes": [
-                "**/*.svelte",
-                "**/*.astro",
-                "**/*.vue"
-            ],
+            "includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
             "linter": {
                 "rules": {
                     "style": {
@@ -101,9 +97,7 @@
             }
         },
         {
-            "includes": [
-                "**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro,css}"
-            ],
+            "includes": ["**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro,css}"],
             "linter": {
                 "rules": {
                     "style": {
@@ -120,10 +114,12 @@
                     },
                     "correctness": {
                         "useImportExtensions": "off",
-                        "noSolidDestructuredProps": "off"
+                        "noSolidDestructuredProps": "off",
+                        "useImageSize": "off"
                     },
                     "performance": {
-                        "useSolidForComponent": "off"
+                        "useSolidForComponent": "off",
+                        "noImgElement": "off"
                     }
                 }
             }
