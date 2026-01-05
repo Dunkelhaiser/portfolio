@@ -22,9 +22,7 @@ const ThemeToggle = () => {
     useEffect(() => {
         document.documentElement.classList[theme === "dark" ? "add" : "remove"]("dark");
         localStorage.setItem("theme", theme);
-    }, [
-        theme,
-    ]);
+    }, [theme]);
 
     const toggleTheme = () => {
         setTheme((prev) => (prev === "light" ? "dark" : "light"));
