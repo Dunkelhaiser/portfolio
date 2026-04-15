@@ -3,9 +3,12 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "pnpm --filter portfolio dev",
-        "build": "pnpm --filter portfolio build",
-        "preview": "pnpm --filter portfolio preview",
+        "dev:portfolio": "pnpm --filter portfolio dev",
+        "build:portfolio": "pnpm --filter portfolio build",
+        "preview:portfolio": "pnpm --filter portfolio preview",
+        "dev:gallery": "pnpm --filter gallery dev",
+        "build:gallery": "pnpm --filter gallery build",
+        "preview:gallery": "pnpm --filter gallery preview",
         "typecheck": "pnpm -r run typecheck",
         "check": "biome check --write && pnpm typecheck"
     },

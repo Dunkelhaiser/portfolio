@@ -1,0 +1,39 @@
+---
+import Header from "@/components/Header/Header";
+import "@fontsource-variable/montserrat";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Kyrylo Tymchyshyn | Gallery</title>
+        <script is:inline>
+            const getThemePreference = () => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+                    return localStorage.getItem('theme');
+                }
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+            const isDark = getThemePreference() === 'dark';
+            document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+        
+            if (typeof localStorage !== 'undefined') {
+                const observer = new MutationObserver(() => {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+                observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+            }
+        </script>
+	</head>
+	<body class="bg-background text-foreground">
+        <Header client:load />
+        <main class="flex flex-col max-w-7xl mx-auto px-5 sm:px-10 pt-12 pb-24 md:pt-24 md:pb-8 gap-18 sm:gap-24">
+		    <slot />
+        </main>
+	</body>
+</html>

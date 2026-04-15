@@ -21,6 +21,49 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
 
+  apps/gallery:
+    dependencies:
+      '@astrojs/react':
+        specifier: ^4.4.2
+        version: 4.4.2(@types/node@24.10.1)(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@fontsource-variable/montserrat':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@tailwindcss/vite':
+        specifier: ^4.1.17
+        version: 4.1.17(vite@6.4.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2))
+      '@types/react':
+        specifier: ^19.2.6
+        version: 19.2.6
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.6)
+      astro:
+        specifier: ^5.16.0
+        version: 5.16.0(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(typescript@5.9.3)
+      react:
+        specifier: ^19.2.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.0(react@19.2.0)
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
+      tailwindcss:
+        specifier: ^4.1.17
+        version: 4.1.17
+    devDependencies:
+      '@repo/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@repo/tailwind':
+        specifier: workspace:*
+        version: link:../../packages/tailwind
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+
   apps/portfolio:
     dependencies:
       '@astrojs/react':
