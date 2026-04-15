@@ -1,0 +1,37 @@
+---
+import type { VariantProps } from "@repo/tailwind";
+import { buttonVariants } from "@repo/ui/Button";
+import type { LucideIcon } from "@repo/ui/icons";
+
+interface Props extends VariantProps<typeof buttonVariants> {
+    href: string;
+    icon: LucideIcon;
+    text?: string;
+    iconSize?: string;
+    target?: string;
+    rel?: string;
+    ariaLabel?: string;
+}
+
+const {
+    href,
+    icon: Icon,
+    text,
+    variant = "outline",
+    size = "lg",
+    iconSize = "size-4.5",
+    target = "_blank",
+    rel = "noopener noreferrer",
+    ariaLabel,
+} = Astro.props;
+---
+
+<a
+    href={href}
+    target={target}
+    rel={rel}
+    aria-label={ariaLabel}
+    class={buttonVariants({ variant, size })}
+>
+    {text} <Icon className={iconSize} />
+</a>

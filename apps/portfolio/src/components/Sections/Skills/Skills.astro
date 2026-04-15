@@ -1,0 +1,265 @@
+---
+import { PanelTop, Server, Share2, ToolCase } from "@repo/ui/icons";
+import AstroIcon from "@/assets/icons/skills/astro.svg";
+import CSS from "@/assets/icons/skills/css.svg";
+import Drizzle from "@/assets/icons/skills/drizzle.svg";
+import EsLint from "@/assets/icons/skills/eslint.svg";
+import ExpressJs from "@/assets/icons/skills/express.svg";
+import Fastify from "@/assets/icons/skills/fastify.svg";
+import Git from "@/assets/icons/skills/git.svg";
+import GitHub from "@/assets/icons/skills/github.svg";
+import Hibernate from "@/assets/icons/skills/hibernate.svg";
+import HTML from "@/assets/icons/skills/html.svg";
+import IntellijIdea from "@/assets/icons/skills/intellij.svg";
+import Java from "@/assets/icons/skills/java.svg";
+import JavaScript from "@/assets/icons/skills/javascript.svg";
+import Markdown from "@/assets/icons/skills/markdown.svg";
+import NestJs from "@/assets/icons/skills/nestjs.svg";
+import NextJs from "@/assets/icons/skills/nextjs.svg";
+import NodeJs from "@/assets/icons/skills/nodejs.svg";
+import NPM from "@/assets/icons/skills/npm.svg";
+import PNPM from "@/assets/icons/skills/pnpm.svg";
+import PostgreSql from "@/assets/icons/skills/postgresql.svg";
+import Prettier from "@/assets/icons/skills/prettier.svg";
+import Prisma from "@/assets/icons/skills/prisma.svg";
+import ReactIcon from "@/assets/icons/skills/react.svg";
+import TanstackQuery from "@/assets/icons/skills/react-query.svg";
+import ReactRouter from "@/assets/icons/skills/react-router.svg";
+import ReduxToolkit from "@/assets/icons/skills/redux.svg";
+import SASS from "@/assets/icons/skills/sass.svg";
+import SpringBoot from "@/assets/icons/skills/spring.svg";
+import Strapi from "@/assets/icons/skills/strapi.svg";
+import Tailwind from "@/assets/icons/skills/tailwind.svg";
+import TanStack from "@/assets/icons/skills/tanstack.png";
+import TRPC from "@/assets/icons/skills/trpc.svg";
+import TypeOrm from "@/assets/icons/skills/typeorm.svg";
+import TypeScript from "@/assets/icons/skills/typescript.svg";
+import Vitest from "@/assets/icons/skills/vitest.svg";
+import VsCode from "@/assets/icons/skills/vscode.svg";
+import Yaak from "@/assets/icons/skills/yaak.svg";
+import Zod from "@/assets/icons/skills/zod.svg";
+import Zustand from "@/assets/icons/skills/zustand.svg";
+import Section from "@/components/Section.astro";
+import SkillColumn from "./SkillColumn.astro";
+
+const frontendSkills = [
+    {
+        name: "HTML",
+        icon: HTML,
+        link: "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    },
+    {
+        name: "CSS",
+        icon: CSS,
+        link: "https://developer.mozilla.org/en-US/docs/Web/CSS",
+    },
+    {
+        name: "SASS",
+        icon: SASS,
+        link: "https://sass-lang.com/",
+    },
+    {
+        name: "TailwindCSS",
+        icon: Tailwind,
+        link: "https://tailwindcss.com/",
+    },
+    {
+        name: "React",
+        icon: ReactIcon,
+        link: "https://react.dev/",
+    },
+    {
+        name: "NextJS",
+        icon: NextJs,
+        link: "https://nextjs.org/",
+    },
+    {
+        name: "TanStack",
+        icon: TanStack,
+        link: "https://tanstack.com/",
+    },
+    {
+        name: "Astro",
+        icon: AstroIcon,
+        link: "https://astro.build/",
+    },
+    {
+        name: "Redux Toolkit",
+        icon: ReduxToolkit,
+        link: "https://redux-toolkit.js.org/",
+    },
+    {
+        name: "Zustand",
+        icon: Zustand,
+        link: "https://docs.pmnd.rs/zustand/getting-started/introduction",
+    },
+    {
+        name: "React Router",
+        icon: ReactRouter,
+        link: "https://reactrouter.com/",
+    },
+    {
+        name: "Tanstack Query",
+        icon: TanstackQuery,
+        link: "https://tanstack.com/query/latest/",
+    },
+];
+
+const backendSkills = [
+    {
+        name: "NodeJS",
+        icon: NodeJs,
+        link: "https://nodejs.org/",
+    },
+    {
+        name: "ExpressJS",
+        icon: ExpressJs,
+        link: "https://expressjs.com/",
+    },
+    {
+        name: "Fastify",
+        icon: Fastify,
+        link: "https://fastify.dev/",
+    },
+    {
+        name: "NestJS",
+        icon: NestJs,
+        link: "https://nestjs.com/",
+    },
+    {
+        name: "Strapi",
+        icon: Strapi,
+        link: "https://strapi.io/",
+    },
+    {
+        name: "Drizzle",
+        icon: Drizzle,
+        link: "https://orm.drizzle.team/",
+    },
+    {
+        name: "Prisma",
+        icon: Prisma,
+        link: "https://www.prisma.io/",
+    },
+    {
+        name: "TypeORM",
+        icon: TypeOrm,
+        link: "https://typeorm.io/",
+    },
+    // {
+    //     name: "Go",
+    //     icon: Go,
+    //     link: "https://go.dev/",
+    // },
+    {
+        name: "Java",
+        icon: Java,
+        link: "https://www.oracle.com/java/",
+    },
+    {
+        name: "Spring Boot",
+        icon: SpringBoot,
+        link: "https://spring.io/",
+    },
+    {
+        name: "Hibernate",
+        icon: Hibernate,
+        link: "https://hibernate.org/",
+    },
+    {
+        name: "PostgreSQL",
+        icon: PostgreSql,
+        link: "https://www.postgresql.org/",
+    },
+];
+
+const shared = [
+    {
+        name: "JavaScript",
+        icon: JavaScript,
+        link: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+    },
+    {
+        name: "TypeScript",
+        icon: TypeScript,
+        link: "https://www.typescriptlang.org/",
+    },
+    {
+        name: "tRPC",
+        icon: TRPC,
+        link: "https://trpc.io/",
+    },
+    {
+        name: "Zod",
+        icon: Zod,
+        link: "https://zod.dev/",
+    },
+    {
+        name: "ESLint",
+        icon: EsLint,
+        link: "https://eslint.org/",
+    },
+    {
+        name: "Prettier",
+        icon: Prettier,
+        link: "https://prettier.io/",
+    },
+    {
+        name: "NPM",
+        icon: NPM,
+        link: "https://www.npmjs.com/",
+    },
+    {
+        name: "PNPM",
+        icon: PNPM,
+        link: "https://pnpm.io/",
+    },
+    {
+        name: "Vitest",
+        icon: Vitest,
+        link: "https://vitest.dev/",
+    },
+];
+
+const toolbox = [
+    {
+        name: "Git",
+        icon: Git,
+        link: "https://git-scm.com/",
+    },
+    {
+        name: "GitHub",
+        icon: GitHub,
+        link: "https://github.com/",
+    },
+    {
+        name: "VSCode",
+        icon: VsCode,
+        link: "https://code.visualstudio.com/",
+    },
+    {
+        name: "Intellij IDEA",
+        icon: IntellijIdea,
+        link: "https://www.jetbrains.com/idea/",
+    },
+    {
+        name: "Yaak",
+        icon: Yaak,
+        link: "https://yaak.app/",
+    },
+    {
+        name: "Markdown",
+        icon: Markdown,
+        link: "https://www.markdownguide.org/",
+    },
+];
+---
+
+<Section title="Skills" id="skills">
+    <div class="mt-4 grid w-full grid-cols-1 gap-x-6 gap-y-9 sm:grid-cols-2 xl:grid-cols-3">
+        <SkillColumn title="Frontend" skills={frontendSkills} icon={PanelTop} />
+        <SkillColumn title="Backend" skills={backendSkills} icon={Server} />
+        <SkillColumn title="Shared" skills={shared} icon={Share2} />
+        <SkillColumn title="Toolbox" skills={toolbox} icon={ToolCase} className="xl:[grid-column:2]" />
+    </div>
+</Section>

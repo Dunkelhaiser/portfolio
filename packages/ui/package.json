@@ -1,0 +1,24 @@
+{
+    "name": "@repo/ui",
+    "version": "0.0.0",
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "exports": {
+        "./icons": "./icons.ts",
+        "./*": "./components/*.tsx"
+    },
+    "dependencies": {
+        "@radix-ui/react-slot": "^1.2.4",
+        "@radix-ui/react-tooltip": "^1.2.8",
+        "@types/react": "^19.2.6",
+        "@types/react-dom": "^19.2.3",
+        "lucide-react": "^0.554.0",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
+    },
+    "devDependencies": {
+        "@repo/config": "workspace:*",
+        "@repo/tailwind": "workspace:*"
+    }
+}

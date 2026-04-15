@@ -1,0 +1,30 @@
+{
+    "name": "portfolio",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@astrojs/react": "^4.4.2",
+        "@fontsource-variable/montserrat": "^5.2.8",
+        "@tailwindcss/vite": "^4.1.17",
+        "@types/react": "^19.2.6",
+        "@types/react-dom": "^19.2.3",
+        "astro": "^5.16.0",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "sharp": "^0.34.5",
+        "tailwindcss": "^4.1.17"
+    },
+    "devDependencies": {
+        "@repo/config": "workspace:*",
+        "@repo/tailwind": "workspace:*",
+        "@repo/ui": "workspace:*"
+    },
+    "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b"
+}
