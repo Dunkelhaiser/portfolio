@@ -1,5 +1,6 @@
 // biome-ignore-all lint/style/useNamingConvention: Icon names match Lucide exports
 
+import { cn } from "@repo/tailwind";
 import { buttonVariants } from "@repo/ui/Button";
 import { UserRound } from "@repo/ui/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/Tooltip";
@@ -23,10 +24,13 @@ const PortfolioBtn = () => {
                 <a
                     href="https://www.kyrylotymchyshyn.com/"
                     target="_blank"
-                    className={buttonVariants({
-                        variant: "ghost",
-                        size: "icon",
-                    })}
+                    className={cn(
+                        buttonVariants({
+                            variant: "ghost",
+                            size: "icon",
+                        }),
+                        "text-muted-foreground"
+                    )}
                     aria-label="Portfolio"
                     rel="noopener"
                 >
