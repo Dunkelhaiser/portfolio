@@ -20,23 +20,25 @@ const PortfolioBtn = () => {
 
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <a
-                    href="https://www.kyrylotymchyshyn.com/"
-                    target="_blank"
-                    className={cn(
-                        buttonVariants({
-                            variant: "ghost",
-                            size: "icon",
-                        }),
-                        "text-muted-foreground"
-                    )}
-                    aria-label="Portfolio"
-                    rel="noopener"
-                >
-                    <UserRound className="size-5.5" />
-                </a>
-            </TooltipTrigger>
+            <TooltipTrigger
+                render={
+                    <a
+                        href="https://www.kyrylotymchyshyn.com/"
+                        target="_blank"
+                        className={cn(
+                            buttonVariants({
+                                variant: "ghost",
+                                size: "icon",
+                            }),
+                            "text-muted-foreground"
+                        )}
+                        aria-label="Portfolio"
+                        rel="noopener"
+                    >
+                        <UserRound className="size-5.5" />
+                    </a>
+                }
+            />
             <TooltipContent side={isMobile ? "top" : "right"}>
                 <p>Portfolio</p>
             </TooltipContent>

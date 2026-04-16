@@ -30,18 +30,20 @@ const ThemeToggle = () => {
 
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                    className="text-muted-foreground"
-                >
-                    {theme === "light" ? <Sun className="size-5.5" /> : <Moon className="size-5.5" />}
-                </Button>
-            </TooltipTrigger>
+            <TooltipTrigger
+                render={
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleTheme}
+                        aria-label="Toggle theme"
+                        className="text-muted-foreground"
+                    >
+                        {theme === "light" ? <Sun className="size-5.5" /> : <Moon className="size-5.5" />}
+                    </Button>
+                }
+            />
             <TooltipContent side={isMobile ? "top" : "right"}>
                 <p>Toggle theme</p>
             </TooltipContent>

@@ -39,23 +39,25 @@ const HeaderLink = ({ item: { name, href, icon }, isActive }: Props) => {
 
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <a
-                    href={href}
-                    className={cn(
-                        buttonVariants({
-                            variant: "ghost",
-                            size: "icon",
-                        }),
-                        isActive
-                            ? "bg-sky-800 dark:bg-primary text-primary-foreground hover:bg-sky-800 dark:hover:bg-primary"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}
-                    aria-label={name}
-                >
-                    <Icon className="size-5.5" />
-                </a>
-            </TooltipTrigger>
+            <TooltipTrigger
+                render={
+                    <a
+                        href={href}
+                        className={cn(
+                            buttonVariants({
+                                variant: "ghost",
+                                size: "icon",
+                            }),
+                            isActive
+                                ? "bg-sky-800 dark:bg-primary text-primary-foreground hover:bg-sky-800 dark:hover:bg-primary"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                        aria-label={name}
+                    >
+                        <Icon className="size-5.5" />
+                    </a>
+                }
+            />
             <TooltipContent side={isMobile ? "top" : "right"}>
                 <p>{name}</p>
             </TooltipContent>
