@@ -1,5 +1,6 @@
 ---
 import Header from "@/components/Header/Header";
+import Footer from "@/components/Sections/Footer.astro";
 import "@fontsource-variable/montserrat";
 ---
 
@@ -34,6 +35,7 @@ import "@fontsource-variable/montserrat";
         <Header client:load />
         <main class="flex flex-col max-w-7xl mx-auto px-5 sm:px-10 pt-12 pb-24 md:pt-24 md:pb-8 gap-18 sm:gap-24">
 		    <slot />
+            <Footer />
         </main>
 	</body>
 </html>

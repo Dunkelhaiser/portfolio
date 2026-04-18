@@ -1,11 +1,81 @@
 ---
-import Footer from "@/components/Sections/Footer.astro";
-import Gallery from "@/components/Sections/Gallery/Gallery.astro";
+/** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
+import Pagination from "@/components/Sections/Gallery/Pagination.astro";
 import Layout from "@/layouts/Layout.astro";
+import type { CloudinaryImage } from "@/lib/types";
 import "@repo/tailwind/globals.css";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+    cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+    api_key: import.meta.env.CLOUDINARY_API_KEY,
+    api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+});
+
+const pageParam = Astro.url.searchParams.get("page") ?? "1";
+const currentPage = Number.parseInt(pageParam, 10) ?? 1;
+
+const perPage = 9;
+const searchExpression = "folder:gallery";
+
+const maxResults = 500;
+
+const results = await cloudinary.search
+    .expression(searchExpression)
+    .sort_by("created_at", "desc")
+    .max_results(maxResults)
+    .execute();
+
+const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: { public_id: string }) => ({
+    id: img.public_id,
+}));
+
+const totalImages = allImages.length;
+const totalPages = Math.ceil(totalImages / perPage);
+
+if (currentPage < 1) {
+    const safeUrl = "/?page=1";
+    return Astro.redirect(safeUrl);
+}
+if (currentPage > totalPages) {
+    const safeUrl = `/?page=${totalPages}`;
+    return Astro.redirect(safeUrl);
+}
+
+const startIndex = (currentPage - 1) * perPage;
+const endIndex = startIndex + perPage;
+const paginatedImages = allImages.slice(startIndex, endIndex);
+
+const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+const secureImages = paginatedImages.map((img) => {
+    const secureUrl = cloudinary.url(img.id, {
+        secure: true,
+        sign_url: true,
+        transformation: [
+            { fetch_format: "auto", quality: "auto" },
+            { flags: "keep_attribution" },
+            { crop: "scale", width: 720 },
+        ],
+    });
+
+    return {
+        id: img.id,
+        src: secureUrl,
+    };
+});
+
+export const prerender = false;
 ---
 
 <Layout>
-    <Gallery />
-    <Footer />
+    <section class="flex flex-col gap-8">
+        <ImagesGrid images={secureImages} />
+        <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            paginationNumbers={paginationNumbers}
+        />
+    </section>
 </Layout>
