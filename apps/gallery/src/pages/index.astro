@@ -3,6 +3,8 @@
 import Footer from "@/components/Sections/Footer.astro";
 import Layout from "@/layouts/Layout.astro";
 import "@repo/tailwind/globals.css";
+import { buttonVariants } from "@repo/ui/Button";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "@repo/ui/icons";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -11,6 +13,8 @@ cloudinary.config({
     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
 });
 
+const currentPage = Number(Astro.url.searchParams.get("page")) || 1;
+const perPage = 9;
 const searchExpression = "folder:gallery";
 
 const maxResults = 500;
@@ -25,7 +29,16 @@ const allImages: { id: string }[] = results.resources.map((img: { public_id: str
     id: img.public_id,
 }));
 
-const secureImages = allImages.map((img) => {
+const totalImages = allImages.length;
+const totalPages = Math.ceil(totalImages / perPage);
+
+const startIndex = (currentPage - 1) * perPage;
+const endIndex = startIndex + perPage;
+const paginatedImages = allImages.slice(startIndex, endIndex);
+
+const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+const secureImages = paginatedImages.map((img) => {
     const secureUrl = cloudinary.url(img.id, {
         secure: true,
         sign_url: true,
@@ -46,7 +59,7 @@ export const prerender = false;
 ---
 
 <Layout>
-    <div class="grid gap-4 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {secureImages.map((img) => (
             <img 
                 src={img.src} 
@@ -55,6 +68,52 @@ export const prerender = false;
                 class="w-full h-auto block"
             />
         ))}
+    </div>
+    <div class="flex gap-2 justify-center">
+        {currentPage <= 1 ? (
+            <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+                <ChevronsLeft className="size-4" />
+            </span>
+        ) : (
+            <a href={`/?page=1`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+                <ChevronsLeft className="size-4" />
+            </a>
+        )}
+        {currentPage <= 1 ? (
+            <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+                <ChevronLeft className="size-4" />
+            </span>
+        ) : (
+            <a href={`/?page=${currentPage - 1}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+                <ChevronLeft className="size-4" />
+            </a>
+        )}
+        {paginationNumbers.map((num) => (
+            <a 
+                href={`/?page=${num}`}
+                class={buttonVariants({ variant: currentPage === num ? "default" : "outline", size: "icon-sm" })}
+            >
+                {num}
+            </a>
+        ))}
+        {currentPage >= totalPages ? (
+            <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+                <ChevronRight className="size-4" />
+            </span>
+        ) : (
+            <a href={`/?page=${currentPage + 1}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+                <ChevronRight className="size-4" />
+            </a>
+        )}
+        {currentPage >= totalPages ? (
+            <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+                <ChevronsRight className="size-4" />
+            </span>
+        ) : (
+            <a href={`/?page=${totalPages}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+                <ChevronsRight className="size-4" />
+            </a>
+        )}
     </div>
     <Footer />
 </Layout>
