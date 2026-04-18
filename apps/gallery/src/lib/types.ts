@@ -7,7 +7,7 @@ interface CloudinaryContext {
 }
 
 interface CloudinaryMetadata {
-    takenAt: string;
+    takenAt: number;
     camera: string;
     daypart: string;
     location: string;
