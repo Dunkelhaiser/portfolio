@@ -3,7 +3,7 @@
 import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
 import Pagination from "@/components/Sections/Gallery/Pagination.astro";
 import Layout from "@/layouts/Layout.astro";
-import type { CloudinaryImage } from "@/lib/types";
+import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 import "@repo/tailwind/globals.css";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -23,12 +23,18 @@ const maxResults = 500;
 
 const results = await cloudinary.search
     .expression(searchExpression)
-    .sort_by("created_at", "desc")
+    .with_field("tags")
+    .with_field("context")
+    .with_field("metadata")
+    .sort_by("metadata.takenAt", "desc")
     .max_results(maxResults)
     .execute();
 
-const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: { public_id: string }) => ({
+const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: CloudinaryResource) => ({
     id: img.public_id,
+    tags: img.tags || [],
+    context: img.context || {},
+    metadata: img.metadata || {},
 }));
 
 const totalImages = allImages.length;
@@ -65,6 +71,9 @@ const secureImages = paginatedImages.map((img) => {
     return {
         id: img.id,
         src: secureUrl,
+        tags: img.tags,
+        context: img.context,
+        metadata: img.metadata,
     };
 });
 
