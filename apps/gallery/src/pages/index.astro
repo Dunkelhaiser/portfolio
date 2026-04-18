@@ -51,8 +51,10 @@ const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
 const secureImages = paginatedImages.map((img) => {
     const secureUrl = cloudinary.url(img.id, {
+        type: "authenticated",
         secure: true,
         sign_url: true,
+        format: "webp",
         transformation: [
             { fetch_format: "auto", quality: "auto" },
             { flags: "keep_attribution" },
