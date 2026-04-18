@@ -103,7 +103,13 @@
                     "style": {
                         "noDefaultExport": "off",
                         "useFilenamingConvention": "off",
-                        "noImplicitBoolean": "off"
+                        "noImplicitBoolean": "off",
+                        "useNamingConvention": {
+                            "level": "error",
+                            "options": {
+                                "strictCase": false
+                            }
+                        }
                     },
                     "security": {
                         "noSecrets": "off"
