@@ -1,9 +1,60 @@
 ---
+/** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import Footer from "@/components/Sections/Footer.astro";
 import Layout from "@/layouts/Layout.astro";
 import "@repo/tailwind/globals.css";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+    cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+    api_key: import.meta.env.CLOUDINARY_API_KEY,
+    api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+});
+
+const searchExpression = "folder:gallery";
+
+const maxResults = 500;
+
+const results = await cloudinary.search
+    .expression(searchExpression)
+    .sort_by("created_at", "desc")
+    .max_results(maxResults)
+    .execute();
+
+const allImages: { id: string }[] = results.resources.map((img: { public_id: string }) => ({
+    id: img.public_id,
+}));
+
+const secureImages = allImages.map((img) => {
+    const secureUrl = cloudinary.url(img.id, {
+        secure: true,
+        sign_url: true,
+        transformation: [
+            { fetch_format: "auto", quality: "auto" },
+            { flags: "keep_attribution" },
+            { crop: "scale", width: 720 },
+        ],
+    });
+
+    return {
+        id: img.id,
+        src: secureUrl,
+    };
+});
+
+export const prerender = false;
 ---
 
 <Layout>
+    <div class="grid gap-4 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {secureImages.map((img) => (
+            <img 
+                src={img.src} 
+                alt="Gallery photo" 
+                loading="lazy" 
+                class="w-full h-auto block"
+            />
+        ))}
+    </div>
     <Footer />
 </Layout>
