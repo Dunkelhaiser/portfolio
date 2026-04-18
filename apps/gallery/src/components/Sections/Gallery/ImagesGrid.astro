@@ -26,7 +26,7 @@ const { images } = Astro.props;
                     src={img.src} 
                     alt={description} 
                     loading="lazy" 
-                    class="w-full h-auto block object-cover" 
+                    class="w-full h-auto aspect-[3/2] block object-cover" 
                 />
 
                 {img.tags && img.tags.length > 0 && (
