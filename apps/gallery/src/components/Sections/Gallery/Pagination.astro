@@ -1,0 +1,59 @@
+---
+import { buttonVariants } from "@repo/ui/Button";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "@repo/ui/icons";
+
+interface Props {
+    currentPage: number;
+    totalPages: number;
+    paginationNumbers: number[];
+}
+
+const { currentPage, totalPages, paginationNumbers } = Astro.props;
+---
+
+<div class="flex gap-2 justify-center">
+    {currentPage <= 1 ? (
+        <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+            <ChevronsLeft className="size-4" />
+        </span>
+    ) : (
+        <a href={`/?page=1`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+            <ChevronsLeft className="size-4" />
+        </a>
+    )}
+    {currentPage <= 1 ? (
+        <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+            <ChevronLeft className="size-4" />
+        </span>
+    ) : (
+        <a href={`/?page=${currentPage - 1}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+            <ChevronLeft className="size-4" />
+        </a>
+    )}
+    {paginationNumbers.map((num) => (
+        <a 
+            href={`/?page=${num}`}
+            class={buttonVariants({ variant: currentPage === num ? "default" : "outline", size: "icon-sm" })}
+        >
+            {num}
+        </a>
+    ))}
+    {currentPage >= totalPages ? (
+        <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+            <ChevronRight className="size-4" />
+        </span>
+    ) : (
+        <a href={`/?page=${currentPage + 1}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+            <ChevronRight className="size-4" />
+        </a>
+    )}
+    {currentPage >= totalPages ? (
+        <span class={buttonVariants({ variant: "outline", size: "icon-sm", className: "opacity-50 pointer-events-none" })}>
+            <ChevronsRight className="size-4" />
+        </span>
+    ) : (
+        <a href={`/?page=${totalPages}`} class={buttonVariants({ variant: "outline", size: "icon-sm" })}>
+            <ChevronsRight className="size-4" />
+        </a>
+    )}
+</div>

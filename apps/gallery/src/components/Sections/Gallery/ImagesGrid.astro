@@ -1,0 +1,20 @@
+---
+import type { CloudinaryImage } from "@/lib/types";
+
+interface Props {
+    images: CloudinaryImage[];
+}
+
+const { images } = Astro.props;
+---
+
+<div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    {images.map((img) => (
+        <img 
+            src={img.src} 
+            alt="Gallery photo" 
+            loading="lazy" 
+            class="w-full h-auto block"
+        />
+    ))}
+</div>
