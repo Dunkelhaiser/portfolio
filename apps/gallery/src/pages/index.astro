@@ -114,10 +114,11 @@ export const prerender = false;
                     e.preventDefault(); 
                     
                     const highResSrc = trigger.getAttribute("data-highres-src");
+                    const href = trigger.getAttribute("href"); 
                     
-                    if (highResSrc) {
+                    if (highResSrc && href) {
                         window.dispatchEvent(new CustomEvent("open-lightbox", { 
-                            detail: { src: highResSrc } 
+                            detail: { src: highResSrc, href: href } 
                         }));
                     }
                 });
