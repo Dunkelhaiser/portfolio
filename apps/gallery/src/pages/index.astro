@@ -115,10 +115,13 @@ export const prerender = false;
                     
                     const highResSrc = trigger.getAttribute("data-highres-src");
                     const href = trigger.getAttribute("href"); 
+                    const rawInfo = trigger.getAttribute("data-photo-info");
                     
                     if (highResSrc && href) {
+                        const photoData = rawInfo ? JSON.parse(rawInfo) : {};
+
                         window.dispatchEvent(new CustomEvent("open-lightbox", { 
-                            detail: { src: highResSrc, href: href } 
+                            detail: { src: highResSrc, href: href, info: photoData } 
                         }));
                     }
                 });

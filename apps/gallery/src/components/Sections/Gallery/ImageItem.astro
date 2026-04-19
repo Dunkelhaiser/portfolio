@@ -19,7 +19,7 @@ const date = unixToDate(image.metadata?.takenAt);
 const isoDate = unixToISODate(image.metadata?.takenAt);
 ---
 
-<a href={`/photo/${encodedId}`} data-highres-src={image.highResSrc} class="lightbox-trigger relative group overflow-hidden rounded-lg border border-border">
+<a href={`/photo/${encodedId}`} data-highres-src={image.highResSrc} data-photo-info={JSON.stringify(image)} class="lightbox-trigger relative group overflow-hidden rounded-lg border border-border">
     <img 
         src={image.previewSrc} 
         alt={description} 
