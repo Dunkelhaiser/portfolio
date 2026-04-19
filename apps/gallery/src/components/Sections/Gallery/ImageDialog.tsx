@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "@repo/ui/Dialog";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageArea } from "@/components/Image/ImageArea";
 import { ImageMetadata } from "@/components/Image/ImageMetadata";
 import { flattenImageMetadata } from "@/lib/metadata";
@@ -9,11 +9,24 @@ const ImageDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [imgSrc, setImgSrc] = useState("");
     const [photoInfo, setPhotoInfo] = useState<CloudinaryImage | null>(null);
+    const originalUrlRef = useRef<string>("");
+    const closingRef = useRef(false);
 
     const metadata = photoInfo ? flattenImageMetadata(photoInfo) : {};
 
+    const closeLightbox = useCallback(() => {
+        if (closingRef.current) {
+            return;
+        }
+        closingRef.current = true;
+        setIsOpen(false);
+        window.history.replaceState(null, "", originalUrlRef.current);
+        closingRef.current = false;
+    }, []);
+
     useEffect(() => {
         const handleOpen = (e: CustomEvent<{ src: string; href: string; info: CloudinaryImage }>) => {
+            originalUrlRef.current = window.location.href;
             setImgSrc(e.detail.src);
             setPhotoInfo(e.detail.info);
             setIsOpen(true);
@@ -22,7 +35,7 @@ const ImageDialog = () => {
         };
 
         const handlePopState = () => {
-            setIsOpen(false);
+            closeLightbox();
         };
 
         window.addEventListener("open-lightbox", handleOpen as EventListener);
@@ -32,13 +45,12 @@ const ImageDialog = () => {
             window.removeEventListener("open-lightbox", handleOpen as EventListener);
             window.removeEventListener("popstate", handlePopState);
         };
-    }, []);
+    }, [closeLightbox]);
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
-            window.history.back();
+            closeLightbox();
         }
-        setIsOpen(open);
     };
 
     return (
