@@ -1,6 +1,7 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { v2 as cloudinary } from "cloudinary";
+import { ImageArea } from "@/components/Sections/Gallery/ImageArea";
 import { ImageMetadata } from "@/components/Sections/Gallery/ImageMetadata";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH } from "@/lib/cloudinary";
@@ -30,14 +31,7 @@ export const prerender = false;
 
 <Layout>
     <div class="flex flex-col lg:flex-row">
-        <div class="lg:max-w-[75%] w-full grid place-items-center lg:px-4 lg:pb-0 pb-4">
-            <img 
-                src={url} 
-                alt={metadata.description} 
-                class="flex-1 h-auto max-h-[85vh] object-contain drop-shadow-2xl" 
-            />
-        </div>
-
+        <ImageArea src={url} alt={metadata.description} className="lg:px-4 lg:pb-0 pb-4" />
         <ImageMetadata metadata={metadata} className="lg:p-8 lg:pr-0" />
     </div>
 </Layout>

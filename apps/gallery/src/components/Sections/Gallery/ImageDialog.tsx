@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@repo/ui/Dialog";
 import { useEffect, useState } from "react";
+import { ImageArea } from "@/components/Sections/Gallery/ImageArea";
 import { ImageMetadata } from "@/components/Sections/Gallery/ImageMetadata";
 import { flattenImageMetadata } from "@/lib/metadata";
 import type { CloudinaryImage } from "@/lib/types";
@@ -46,14 +47,7 @@ const ImageDialog = () => {
                 className="min-w-[90vw] p-0 overflow-hidden flex flex-col lg:flex-row gap-0 bg-background"
                 showCloseButton={true}
             >
-                <div className="lg:max-w-[75%] w-full grid place-items-center p-4">
-                    <img
-                        src={imgSrc}
-                        alt={metadata.description}
-                        className="flex-1 h-auto max-h-[85vh] object-contain drop-shadow-2xl"
-                    />
-                </div>
-
+                <ImageArea src={imgSrc} alt={metadata.description} className="p-4" />
                 <ImageMetadata metadata={metadata} className="bg-card" />
             </DialogContent>
         </Dialog>
