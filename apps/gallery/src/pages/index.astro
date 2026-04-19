@@ -5,6 +5,7 @@ import { ImageDialog } from "@/components/Sections/Gallery/ImageDialog";
 import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
 import Pagination from "@/components/Sections/Gallery/Pagination.astro";
 import Layout from "@/layouts/Layout.astro";
+import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 
 cloudinary.config({
@@ -55,40 +56,14 @@ const paginatedImages = allImages.slice(startIndex, endIndex);
 
 const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-const secureImages = paginatedImages.map((img) => {
-    const secureUrl = cloudinary.url(img.id, {
-        type: "authenticated",
-        secure: true,
-        sign_url: true,
-        format: "webp",
-        transformation: [
-            { fetch_format: "auto", quality: "auto" },
-            { flags: "keep_attribution" },
-            { crop: "scale", width: 1280 },
-        ],
-    });
-
-    const highResUrl = cloudinary.url(img.id, {
-        type: "authenticated",
-        secure: true,
-        sign_url: true,
-        format: "webp",
-        transformation: [
-            { fetch_format: "auto", quality: "auto" },
-            { flags: "keep_attribution" },
-            { crop: "scale", width: 1920 },
-        ],
-    });
-
-    return {
-        id: img.id,
-        previewSrc: secureUrl,
-        highResSrc: highResUrl,
-        tags: img.tags,
-        context: img.context,
-        metadata: img.metadata,
-    };
-});
+const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
+    id: img.id,
+    previewSrc: getSignedUrl(img.id, PREVIEW_WIDTH),
+    highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
+    tags: img.tags,
+    context: img.context,
+    metadata: img.metadata,
+}));
 
 export const prerender = false;
 ---

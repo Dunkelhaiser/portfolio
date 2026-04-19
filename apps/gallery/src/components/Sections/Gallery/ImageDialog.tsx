@@ -1,6 +1,7 @@
 import { Dialog, DialogContent } from "@repo/ui/Dialog";
 import { useEffect, useState } from "react";
 import { ImageMetadata } from "@/components/Sections/Gallery/ImageMetadata";
+import { flattenImageMetadata } from "@/lib/metadata";
 import type { CloudinaryImage } from "@/lib/types";
 
 const ImageDialog = () => {
@@ -8,14 +9,7 @@ const ImageDialog = () => {
     const [imgSrc, setImgSrc] = useState("");
     const [photoInfo, setPhotoInfo] = useState<CloudinaryImage | null>(null);
 
-    const metadata = {
-        title: photoInfo?.context?.caption,
-        description: photoInfo?.context?.alt,
-        camera: photoInfo?.metadata?.camera,
-        location: photoInfo?.metadata?.location,
-        takenAt: photoInfo?.metadata?.takenAt,
-        tags: photoInfo?.tags,
-    };
+    const metadata = photoInfo ? flattenImageMetadata(photoInfo) : {};
 
     useEffect(() => {
         const handleOpen = (e: CustomEvent<{ src: string; href: string; info: CloudinaryImage }>) => {

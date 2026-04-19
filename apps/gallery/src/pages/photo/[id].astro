@@ -3,22 +3,14 @@
 import { v2 as cloudinary } from "cloudinary";
 import { ImageMetadata } from "@/components/Sections/Gallery/ImageMetadata";
 import Layout from "@/layouts/Layout.astro";
+import { getSignedUrl, HIGH_RES_WIDTH } from "@/lib/cloudinary";
+import { flattenImageMetadata } from "@/lib/metadata";
 import type { CloudinaryResourceById } from "@/lib/types";
 
 const { id } = Astro.params;
 const decodedId = decodeURIComponent(id as string);
 
-const highResUrl = cloudinary.url(decodedId, {
-    type: "authenticated",
-    secure: true,
-    sign_url: true,
-    format: "webp",
-    transformation: [
-        { fetch_format: "auto", quality: "auto" },
-        { flags: "keep_attribution" },
-        { crop: "scale", width: 1920 },
-    ],
-});
+const url = getSignedUrl(decodedId, HIGH_RES_WIDTH);
 
 const resource: CloudinaryResourceById | null = await cloudinary.api.resource(decodedId, {
     type: "authenticated",
@@ -31,14 +23,7 @@ if (!resource) {
     return Astro.redirect("/");
 }
 
-const metadata = {
-    title: resource?.context?.custom?.caption,
-    description: resource?.context?.custom?.alt,
-    camera: resource?.metadata?.camera,
-    location: resource?.metadata?.location,
-    takenAt: resource?.metadata?.takenAt,
-    tags: resource?.tags,
-};
+const metadata = flattenImageMetadata(resource);
 
 export const prerender = false;
 ---
@@ -47,7 +32,7 @@ export const prerender = false;
     <div class="flex flex-col lg:flex-row">
         <div class="lg:max-w-[75%] w-full grid place-items-center lg:px-4 lg:pb-0 pb-4">
             <img 
-                src={highResUrl} 
+                src={url} 
                 alt={metadata.description} 
                 class="flex-1 h-auto max-h-[85vh] object-contain drop-shadow-2xl" 
             />
