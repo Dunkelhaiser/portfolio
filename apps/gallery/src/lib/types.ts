@@ -38,3 +38,12 @@ export interface CloudinaryResourceById {
     };
     metadata?: CloudinaryMetadata;
 }
+
+export interface CloudinaryImageFlat {
+    title?: string;
+    description?: string;
+    camera?: string;
+    location?: string;
+    takenAt?: number;
+    tags?: string[];
+}
