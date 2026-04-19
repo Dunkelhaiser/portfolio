@@ -1,11 +1,11 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import { v2 as cloudinary } from "cloudinary";
+import { ImageDialog } from "@/components/Sections/Gallery/ImageDialog";
 import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
 import Pagination from "@/components/Sections/Gallery/Pagination.astro";
 import Layout from "@/layouts/Layout.astro";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
-import "@repo/tailwind/globals.css";
-import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
@@ -68,9 +68,22 @@ const secureImages = paginatedImages.map((img) => {
         ],
     });
 
+    const highResUrl = cloudinary.url(img.id, {
+        type: "authenticated",
+        secure: true,
+        sign_url: true,
+        format: "webp",
+        transformation: [
+            { fetch_format: "auto", quality: "auto" },
+            { flags: "keep_attribution" },
+            { crop: "scale", width: 1920 },
+        ],
+    });
+
     return {
         id: img.id,
-        src: secureUrl,
+        previewSrc: secureUrl,
+        highResSrc: highResUrl,
         tags: img.tags,
         context: img.context,
         metadata: img.metadata,
@@ -85,4 +98,30 @@ export const prerender = false;
         <ImagesGrid images={secureImages} />
         <Pagination currentPage={currentPage} totalPages={totalPages} paginationNumbers={paginationNumbers} />
     </section>
+
+    <ImageDialog client:load />
+
+    <script>
+        document.addEventListener("astro:page-load", () => {
+            const triggers = document.querySelectorAll(".lightbox-trigger");
+            
+            triggers.forEach((trigger) => {
+                trigger.addEventListener("click", (e) => {
+                    if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey)) {
+                        return;
+                    }
+                    
+                    e.preventDefault(); 
+                    
+                    const highResSrc = trigger.getAttribute("data-highres-src");
+                    
+                    if (highResSrc) {
+                        window.dispatchEvent(new CustomEvent("open-lightbox", { 
+                            detail: { src: highResSrc } 
+                        }));
+                    }
+                });
+            });
+        });
+    </script>
 </Layout>

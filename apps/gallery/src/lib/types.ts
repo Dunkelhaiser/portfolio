@@ -15,7 +15,8 @@ interface CloudinaryMetadata {
 
 export interface CloudinaryImage {
     id: string;
-    src: string;
+    previewSrc: string;
+    highResSrc: string;
     tags: string[];
     context: CloudinaryContext;
     metadata: CloudinaryMetadata;

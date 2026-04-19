@@ -1,0 +1,31 @@
+---
+/** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import { v2 as cloudinary } from "cloudinary";
+import Layout from "@/layouts/Layout.astro";
+
+const { id } = Astro.params;
+const decodedId = decodeURIComponent(id as string);
+
+const highResUrl = cloudinary.url(decodedId, {
+    type: "authenticated",
+    secure: true,
+    sign_url: true,
+    format: "webp",
+    transformation: [
+        { fetch_format: "auto", quality: "auto" },
+        { flags: "keep_attribution" },
+        { crop: "scale", width: 1920 },
+    ],
+});
+
+export const prerender = false;
+---
+
+<Layout>
+    <div class="flex items-center justify-center min-h-[70vh]">
+        <img 
+            src={highResUrl} 
+            class="max-w-full max-h-[80vh] rounded-lg shadow-xl" 
+        />
+    </div>
+</Layout>
