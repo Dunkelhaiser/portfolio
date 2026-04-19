@@ -31,7 +31,7 @@ export const prerender = false;
 
 <Layout>
     <div class="flex flex-col lg:flex-row">
-        <ImageArea src={url} alt={metadata.description} className="lg:px-4 lg:pb-0 pb-4" />
+        <ImageArea client:load src={url} alt={metadata.description} className="lg:px-4 lg:pb-0 pb-4" />
         <ImageMetadata metadata={metadata} className="lg:p-8 lg:pr-0" />
     </div>
 </Layout>
