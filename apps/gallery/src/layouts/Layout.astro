@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Sections/Footer.astro";
 import "@fontsource-variable/montserrat";
+import "nprogress/nprogress.css";
 ---
 
 <!doctype html>
@@ -43,6 +44,19 @@ import "@fontsource-variable/montserrat";
             });
         </script>
         <ClientRouter />
+        <script>
+            import NProgress from "nprogress";
+
+            NProgress.configure({ showSpinner: false });
+
+            document.addEventListener("astro:before-preparation", () => {
+                NProgress.start();
+            });
+
+            document.addEventListener("astro:page-load", () => {
+                NProgress.done();
+            });
+        </script>
     </head>
     <body class="bg-background text-foreground" transition:animate="none">
         <Header client:load />
