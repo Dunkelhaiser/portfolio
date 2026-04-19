@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@repo/ui/Dialog";
 import { useEffect, useState } from "react";
-import { ImageArea } from "@/components/Sections/Gallery/ImageArea";
-import { ImageMetadata } from "@/components/Sections/Gallery/ImageMetadata";
+import { ImageArea } from "@/components/Image/ImageArea";
+import { ImageMetadata } from "@/components/Image/ImageMetadata";
 import { flattenImageMetadata } from "@/lib/metadata";
 import type { CloudinaryImage } from "@/lib/types";
 
