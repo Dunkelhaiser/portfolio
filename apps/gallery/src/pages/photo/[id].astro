@@ -1,7 +1,11 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import { Badge } from "@repo/ui/Badge";
+import { Calendar, Camera, MapPin } from "@repo/ui/icons";
 import { v2 as cloudinary } from "cloudinary";
 import Layout from "@/layouts/Layout.astro";
+import type { CloudinaryResourceById } from "@/lib/types";
+import { unixToDate, unixToISODate } from "@/lib/utils";
 
 const { id } = Astro.params;
 const decodedId = decodeURIComponent(id as string);
@@ -18,14 +22,84 @@ const highResUrl = cloudinary.url(decodedId, {
     ],
 });
 
+const resource: CloudinaryResourceById | null = await cloudinary.api.resource(decodedId, {
+    type: "authenticated",
+    tags: true,
+    context: true,
+    metadata: true,
+});
+
+if (!resource) {
+    return Astro.redirect("/");
+}
+
+const tags = resource.tags;
+const title = resource.context?.custom.caption;
+const description = resource.context?.custom.alt;
+const location = resource.metadata?.location;
+const camera = resource.metadata?.camera;
+const takenAt = resource.metadata?.takenAt;
+
+const date = takenAt ? unixToDate(takenAt, true) : null;
+const isoDate = takenAt ? unixToISODate(takenAt) : null;
+
 export const prerender = false;
 ---
 
 <Layout>
-    <div class="flex items-center justify-center min-h-[70vh]">
-        <img 
-            src={highResUrl} 
-            class="max-w-full max-h-[80vh] rounded-lg shadow-xl" 
-        />
+    <div class="flex flex-col lg:flex-row">
+        <div class="lg:max-w-[75%] w-full grid place-items-center lg:px-4 lg:pb-0 pb-4">
+            <img 
+                src={highResUrl} 
+                alt={description} 
+                class="flex-1 h-auto max-h-[85vh] object-contain drop-shadow-2xl" 
+            />
+        </div>
+
+        <div class="w-full lg:w-[25%] flex flex-col gap-6 p-6 lg:p-8 lg:pr-0 overflow-y-auto border-l border-border">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-2xl font-bold font-heading text-foreground">
+                    {title || "Untitled"}
+                </h1>
+                {description && (
+                    <p class="text-muted-foreground text-sm leading-relaxed">
+                        {description}
+                    </p>
+                )}
+            </div>
+
+            <div class="flex flex-col gap-4 py-6 border-y border-border">
+                {camera && (
+                    <div class="flex items-center gap-3 text-sm text-foreground">
+                        <Camera className="size-5 text-muted-foreground" />
+                        <span class="font-mono">{camera}</span>
+                    </div>
+                )}
+                {location && (
+                    <div class="flex items-center gap-3 text-sm text-foreground">
+                        <MapPin className="size-5 text-muted-foreground" />
+                        <span class="font-mono">{location}</span>
+                    </div>
+                )}
+                {date && (
+                    <div class="flex items-center gap-3 text-sm text-foreground">
+                        <Calendar className="size-5 text-muted-foreground" />
+                        <time datetime={isoDate} class="font-mono">
+                            {date}
+                        </time>
+                    </div>
+                )}
+            </div>
+
+            {tags && tags.length > 0 && (
+                <div class="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                        <Badge variant="secondary">
+                            {tag}
+                        </Badge>
+                    ))}
+                </div>
+            )}
+        </div>
     </div>
 </Layout>

@@ -29,3 +29,12 @@ export interface CloudinaryResource {
     context?: CloudinaryContext;
     metadata?: CloudinaryMetadata;
 }
+
+export interface CloudinaryResourceById {
+    created_at: string;
+    tags?: string[];
+    context?: {
+        custom: CloudinaryContext;
+    };
+    metadata?: CloudinaryMetadata;
+}

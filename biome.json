@@ -123,6 +123,9 @@
                         "noSolidDestructuredProps": "off",
                         "useImageSize": "off"
                     },
+                    "complexity": {
+                        "noExcessiveLinesPerFunction": "off"
+                    },
                     "performance": {
                         "useSolidForComponent": "off",
                         "noImgElement": "off"
