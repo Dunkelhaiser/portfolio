@@ -6,6 +6,7 @@ import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
 import Pagination from "@/components/Sections/Gallery/Pagination.astro";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
+import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 
 cloudinary.config({
@@ -17,9 +18,7 @@ cloudinary.config({
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
 
-const perPage = 9;
 const searchExpression = "folder:gallery";
-
 const maxResults = 500;
 
 const results = await cloudinary.search
@@ -36,23 +35,28 @@ const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: Cl
     tags: img.tags || [],
     context: img.context || {},
     metadata: img.metadata || {},
+    width: img.width,
+    height: img.height,
 }));
 
-const totalImages = allImages.length;
-const totalPages = Math.ceil(totalImages / perPage);
+const pages = calculateMasonryPages(allImages, {
+    targetPerPage: 12,
+    minPerPage: 9,
+    maxPerPage: 15,
+});
+
+const totalPages = pages.length;
 
 if (currentPage < 1) {
     const safeUrl = "/?page=1";
     return Astro.redirect(safeUrl);
 }
-if (currentPage > totalPages) {
+if (currentPage > totalPages && totalPages > 0) {
     const safeUrl = `/?page=${totalPages}`;
     return Astro.redirect(safeUrl);
 }
 
-const startIndex = (currentPage - 1) * perPage;
-const endIndex = startIndex + perPage;
-const paginatedImages = allImages.slice(startIndex, endIndex);
+const paginatedImages = totalPages > 0 && pages[currentPage - 1] ? pages[currentPage - 1] : [];
 
 const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
@@ -63,6 +67,8 @@ const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
     tags: img.tags,
     context: img.context,
     metadata: img.metadata,
+    width: img.width,
+    height: img.height,
 }));
 
 export const prerender = false;

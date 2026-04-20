@@ -124,7 +124,13 @@
                         "useImageSize": "off"
                     },
                     "complexity": {
-                        "noExcessiveLinesPerFunction": "off"
+                        "noExcessiveLinesPerFunction": "off",
+                        "noExcessiveCognitiveComplexity": {
+                            "level": "error",
+                            "options": {
+                                "maxAllowedComplexity": 18
+                            }
+                        }
                     },
                     "performance": {
                         "useSolidForComponent": "off",

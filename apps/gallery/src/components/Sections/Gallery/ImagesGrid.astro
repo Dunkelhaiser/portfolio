@@ -1,4 +1,5 @@
 ---
+import { Masonry } from "astro-masonry";
 import type { CloudinaryImage } from "@/lib/types";
 import ImageItem from "./ImageItem.astro";
 
@@ -9,6 +10,10 @@ interface Props {
 const { images } = Astro.props;
 ---
 
-<div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-    {images.map((img) => <ImageItem image={img} /> )}
-</div>
+<Masonry breakpointCols={{ default: 3, 1024: 2, 768: 1 }} class="flex gap-4">
+    {images.map((img) => (
+        <div class="mb-4 break-inside-avoid">
+            <ImageItem image={img} />
+        </div>
+    ))}
+</Masonry>

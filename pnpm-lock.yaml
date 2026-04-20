@@ -44,6 +44,9 @@ importers:
       astro:
         specifier: ^5.16.0
         version: 5.16.0(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(typescript@6.0.2)
+      astro-masonry:
+        specifier: ^1.2.2
+        version: 1.2.2
       cloudinary:
         specifier: ^2.9.0
         version: 2.9.0
@@ -1127,6 +1130,9 @@ packages:
 
   array-iterate@2.0.1:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
+
+  astro-masonry@1.2.2:
+    resolution: {integrity: sha512-416VOoR+6dVjOyM2pxlQFj4AiFIV6NdA6WFUFqkVTitaG61o+5Sz0YTA20FAW7xnbIVWru9h6XIWNeEy3hiPmA==}
 
   astro@5.16.0:
     resolution: {integrity: sha512-GaDRs2Mngpw3dr2vc085GnORh98NiXxwIjg/EoQQQl/icZt3Z7s0BRsYHDZ8swkZbOA6wZsqWJdrNirl+iKcDg==}
@@ -3443,6 +3449,8 @@ snapshots:
   array-ify@1.0.0: {}
 
   array-iterate@2.0.1: {}
+
+  astro-masonry@1.2.2: {}
 
   astro@5.16.0(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(typescript@6.0.2):
     dependencies:

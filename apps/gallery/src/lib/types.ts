@@ -20,6 +20,8 @@ export interface CloudinaryImage {
     tags: string[];
     context: CloudinaryContext;
     metadata: CloudinaryMetadata;
+    width?: number;
+    height?: number;
 }
 
 export interface CloudinaryResource {
@@ -28,6 +30,8 @@ export interface CloudinaryResource {
     tags?: string[];
     context?: CloudinaryContext;
     metadata?: CloudinaryMetadata;
+    width?: number;
+    height?: number;
 }
 
 export interface CloudinaryResourceById {
