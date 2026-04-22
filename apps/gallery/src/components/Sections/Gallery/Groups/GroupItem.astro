@@ -1,4 +1,5 @@
 ---
+import { Badge } from "@repo/ui/Badge";
 import type { Group } from "@/lib/types";
 
 interface Props {
@@ -16,6 +17,15 @@ const { group } = Astro.props;
         class="h-full w-full object-cover"
         loading="lazy"
     />
+
+    {group.tags && group.tags.length > 0 && (
+        <div class="absolute top-2.5 left-2.5 right-2.5 flex flex-wrap justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            {group.tags.map((tag) => (
+                <Badge variant="blur">{tag}</Badge>
+            ))}
+        </div>
+    )}
+
     <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-80 transition-opacity group-hover:opacity-100" />
     <div class="absolute bottom-0 left-0 right-0 p-4 pt-3 bg-black/50 backdrop-blur-md text-white z-10">
         <h3 class="font-bold truncate">{group.data?.title ?? group.id}</h3>

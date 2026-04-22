@@ -57,5 +57,6 @@ export interface CloudinaryImageFlat {
 export interface Group {
     id: string;
     previewSrc: string;
+    tags: string[];
     data?: CollectionEntry<"groups">["data"];
 }

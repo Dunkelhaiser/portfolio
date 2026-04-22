@@ -65,16 +65,25 @@ const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
     highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
 }));
 
-const groupMap = new Map<string, (typeof allImages)[0]>();
+const groupMap = new Map<string, { previewImg: (typeof allImages)[0]; tags: Set<string> }>();
 for (const img of allImages) {
-    if (img.context?.group && !groupMap.has(img.context.group)) {
-        groupMap.set(img.context.group, img);
+    if (img.context?.group) {
+        const groupId = img.context.group;
+        const groupData = groupMap.get(groupId);
+        if (groupData) {
+            for (const tag of img.tags || []) {
+                groupData.tags.add(tag);
+            }
+        } else {
+            groupMap.set(groupId, { previewImg: img, tags: new Set(img.tags || []) });
+        }
     }
 }
 
-const allGroupsList = Array.from(groupMap.entries()).map(([groupId, previewImg]) => ({
+const allGroupsList = Array.from(groupMap.entries()).map(([groupId, { previewImg, tags }]) => ({
     id: groupId,
     previewSrc: getSignedUrl(previewImg.id, PREVIEW_WIDTH),
+    tags: Array.from(tags).sort(),
 }));
 
 const contentGroups = await getCollection("groups");
