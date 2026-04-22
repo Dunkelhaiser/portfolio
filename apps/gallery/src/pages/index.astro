@@ -71,6 +71,7 @@ for (const img of allImages) {
         const groupId = img.context.group;
         const groupData = groupMap.get(groupId);
         if (groupData) {
+            groupData.previewImg = img;
             for (const tag of img.tags || []) {
                 groupData.tags.add(tag);
             }
