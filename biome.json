@@ -109,7 +109,8 @@
                             "options": {
                                 "strictCase": false
                             }
-                        }
+                        },
+                        "useBlockStatements": "off"
                     },
                     "security": {
                         "noSecrets": "off"
