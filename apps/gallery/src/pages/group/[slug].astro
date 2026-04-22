@@ -1,14 +1,16 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getEntry } from "astro:content";
+import { Badge } from "@repo/ui/Badge";
 import { buttonVariants } from "@repo/ui/Button";
-import { ChevronLeft } from "@repo/ui/icons";
+import { Calendar, ChevronLeft, MapPin } from "@repo/ui/icons";
 import { v2 as cloudinary } from "cloudinary";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
+import { formatCameraName, unixToDate } from "@/lib/utils";
 
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect("/?view=groups");
@@ -47,6 +49,19 @@ const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: Cl
     height: img.height,
 }));
 
+const uniqueTags = Array.from(new Set(allImages.flatMap((img) => img.tags || []))).sort();
+const uniqueCameras = Array.from(new Set(allImages.map((img) => img.metadata?.camera).filter(Boolean))).sort();
+const uniqueLocations = Array.from(new Set(allImages.map((img) => img.metadata?.location).filter(Boolean))).sort();
+const uniqueDates = Array.from(
+    new Set(
+        allImages
+            .map((img) => img.metadata?.takenAt)
+            .filter((val): val is number => typeof val === "number")
+            .sort((a, b) => a - b)
+            .map((timestamp) => unixToDate(timestamp))
+    )
+);
+
 if (allImages.length === 0) {
     return Astro.redirect("/?view=groups");
 }
@@ -81,7 +96,42 @@ export const prerender = false;
             Back to Groups
         </a>
         <h1 class="text-3xl font-bold">{groupName}</h1>
+        
+        {(uniqueDates.length > 0 || uniqueLocations.length > 0) && (
+            <div class="mt-4 flex flex-wrap items-center gap-4 text-muted-foreground">
+                {uniqueDates.length > 0 && (
+                    <span class="flex gap-1.5 items-center font-mono text-sm tabular-nums">
+                        <Calendar className="size-4 shrink-0" /> {uniqueDates.join("; ")}
+                    </span>
+                )}
+                {uniqueLocations.length > 0 && (
+                    <span class="flex gap-1.5 items-center font-mono text-sm">
+                        <MapPin className="size-4 shrink-0" /> {uniqueLocations.join("; ")}
+                    </span>
+                )}
+            </div>
+        )}
+
         {groupDescription && <p class="text-muted-foreground mt-2 max-w-prose">{groupDescription}</p>}
+        
+        {(uniqueTags.length > 0 || uniqueCameras.length > 0) && (
+            <div class="mt-6 flex flex-col gap-3">
+                {uniqueCameras.length > 0 && (
+                    <div class="flex flex-wrap items-center gap-2">
+                        {uniqueCameras.map((camera) => (
+                            <Badge variant="outline">{formatCameraName(camera)}</Badge>
+                        ))}
+                    </div>
+                )}
+                {uniqueTags.length > 0 && (
+                    <div class="flex flex-wrap items-center gap-2">
+                        {uniqueTags.map((tag) => (
+                            <Badge variant="secondary">{tag}</Badge>
+                        ))}
+                    </div>
+                )}
+            </div>
+        )}
     </div>
 
     <ImagesList 
