@@ -90,7 +90,13 @@ const allGroupsList = Array.from(groupMap.entries()).map(([groupId, { previewImg
 const contentGroups = await getCollection("groups");
 const groupsWithData = allGroupsList.map((group) => {
     const data = contentGroups.find((c) => c.id.split(".md")[0] === group.id)?.data;
-    return { ...group, data };
+
+    let previewSrc = group.previewSrc;
+    if (data?.previewImageId) {
+        previewSrc = getSignedUrl(data.previewImageId, PREVIEW_WIDTH);
+    }
+
+    return { ...group, data, previewSrc };
 });
 
 const groupsPerPage = 12;

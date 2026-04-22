@@ -5,6 +5,7 @@ const groupsCollection = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
+        previewImageId: z.string().optional(),
     }),
 });
 
