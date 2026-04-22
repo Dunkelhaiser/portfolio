@@ -16,14 +16,19 @@ const ViewTabs = ({ defaultView, flatContent, groupsContent }: Props) => {
                 url.searchParams.set("view", val);
                 url.searchParams.set("page", "1");
                 window.history.pushState({}, "", url.toString());
+                setTimeout(() => window.dispatchEvent(new Event("resize")), 10);
             }}
         >
             <TabsList>
                 <TabsTrigger value="flat">All Photos</TabsTrigger>
                 <TabsTrigger value="groups">Groups</TabsTrigger>
             </TabsList>
-            <TabsContent value="flat">{flatContent}</TabsContent>
-            <TabsContent value="groups">{groupsContent}</TabsContent>
+            <TabsContent value="flat" keepMounted>
+                {flatContent}
+            </TabsContent>
+            <TabsContent value="groups" keepMounted>
+                {groupsContent}
+            </TabsContent>
         </Tabs>
     );
 };
