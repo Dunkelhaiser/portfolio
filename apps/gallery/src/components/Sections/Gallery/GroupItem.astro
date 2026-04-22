@@ -1,0 +1,23 @@
+---
+import type { Group } from "@/lib/types";
+
+interface Props {
+    group: Group;
+}
+
+const { group } = Astro.props;
+---
+
+
+<a href={`/group/${group.id}`} class="group relative aspect-square overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">
+    <img
+        src={group.previewSrc}
+        alt={group.data?.title ?? group.id}
+        class="h-full w-full object-cover"
+        loading="lazy"
+    />
+    <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-80 transition-opacity group-hover:opacity-100" />
+    <div class="absolute bottom-0 left-0 right-0 p-4 pt-3 bg-black/50 backdrop-blur-md text-white z-10">
+        <h3 class="font-bold truncate">{group.data?.title ?? group.id}</h3>
+    </div>
+</a>

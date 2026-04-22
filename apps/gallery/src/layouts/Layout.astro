@@ -5,6 +5,7 @@ import Footer from "@/components/Sections/Footer.astro";
 import "@fontsource-variable/montserrat";
 import "nprogress/nprogress.css";
 import "@repo/tailwind/globals.css";
+import { ImageDialog } from "@/components/Sections/Gallery/ImageDialog";
 ---
 
 <!doctype html>
@@ -61,9 +62,39 @@ import "@repo/tailwind/globals.css";
     </head>
     <body class="bg-background text-foreground" transition:animate="none">
         <Header client:load />
-        <main class="flex flex-col max-w-7xl mx-auto px-5 sm:px-10 pt-12 pb-24 md:pb-8 gap-18 sm:gap-24">
+        <main class="max-w-7xl mx-auto px-5 sm:px-10 pt-12 pb-24 md:pb-8">
             <slot />
             <Footer />
         </main>
+        
+        <ImageDialog client:load />
+
+        <script>
+            document.addEventListener("astro:page-load", () => {
+                const triggers = document.querySelectorAll(".lightbox-trigger");
+                
+                triggers.forEach((trigger) => {
+                    trigger.addEventListener("click", (e) => {
+                        if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey)) {
+                            return;
+                        }
+                        
+                        e.preventDefault(); 
+                        
+                        const highResSrc = trigger.getAttribute("data-highres-src");
+                        const href = trigger.getAttribute("href"); 
+                        const rawInfo = trigger.getAttribute("data-photo-info");
+                        
+                        if (highResSrc && href) {
+                            const photoData = rawInfo ? JSON.parse(rawInfo) : {};
+
+                            window.dispatchEvent(new CustomEvent("open-lightbox", { 
+                                detail: { src: highResSrc, href: href, info: photoData } 
+                            }));
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

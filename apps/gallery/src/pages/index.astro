@@ -1,9 +1,10 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import { getCollection } from "astro:content";
 import { v2 as cloudinary } from "cloudinary";
-import { ImageDialog } from "@/components/Sections/Gallery/ImageDialog";
-import ImagesGrid from "@/components/Sections/Gallery/ImagesGrid.astro";
-import Pagination from "@/components/Sections/Gallery/Pagination.astro";
+import GroupsList from "@/components/Sections/Gallery/GroupsList.astro";
+import ImagesList from "@/components/Sections/Gallery/ImagesList.astro";
+import { ViewTabs } from "@/components/Sections/Gallery/ViewTabs";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
@@ -15,8 +16,13 @@ cloudinary.config({
     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
 });
 
+const viewParam = Astro.url.searchParams.get("view") ?? "flat";
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
+
+const isFlat = viewParam === "flat";
+const flatPage = isFlat ? currentPage : 1;
+const groupPage = isFlat ? 1 : currentPage;
 
 const searchExpression = "folder:gallery";
 const maxResults = 500;
@@ -45,68 +51,69 @@ const pages = calculateMasonryPages(allImages, {
     maxPerPage: 15,
 });
 
-const totalPages = pages.length;
+const totalFlatPages = pages.length;
+if (isFlat && currentPage < 1) return Astro.redirect("/?page=1&view=flat");
+if (isFlat && currentPage > totalFlatPages && totalFlatPages > 0)
+    return Astro.redirect(`/?page=${totalFlatPages}&view=flat`);
 
-if (currentPage < 1) {
-    const safeUrl = "/?page=1";
-    return Astro.redirect(safeUrl);
-}
-if (currentPage > totalPages && totalPages > 0) {
-    const safeUrl = `/?page=${totalPages}`;
-    return Astro.redirect(safeUrl);
-}
-
-const paginatedImages = totalPages > 0 && pages[currentPage - 1] ? pages[currentPage - 1] : [];
-
-const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+const paginatedImages = totalFlatPages > 0 && pages[flatPage - 1] ? pages[flatPage - 1] : [];
+const flatPaginationNumbers = Array.from({ length: totalFlatPages }, (_, i) => i + 1);
 
 const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
-    id: img.id,
+    ...img,
     previewSrc: getSignedUrl(img.id, PREVIEW_WIDTH),
     highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
-    tags: img.tags,
-    context: img.context,
-    metadata: img.metadata,
-    width: img.width,
-    height: img.height,
 }));
+
+const groupMap = new Map<string, (typeof allImages)[0]>();
+for (const img of allImages) {
+    if (img.context?.group && !groupMap.has(img.context.group)) {
+        groupMap.set(img.context.group, img);
+    }
+}
+
+const allGroupsList = Array.from(groupMap.entries()).map(([groupId, previewImg]) => ({
+    id: groupId,
+    previewSrc: getSignedUrl(previewImg.id, PREVIEW_WIDTH),
+}));
+
+const contentGroups = await getCollection("groups");
+const groupsWithData = allGroupsList.map((group) => {
+    const data = contentGroups.find((c) => c.id.split(".md")[0] === group.id)?.data;
+    return { ...group, data };
+});
+
+const groupsPerPage = 12;
+const totalGroupPages = Math.ceil(groupsWithData.length / groupsPerPage);
+
+if (!isFlat && currentPage < 1) return Astro.redirect("/?page=1&view=groups");
+if (!isFlat && currentPage > totalGroupPages && totalGroupPages > 0)
+    return Astro.redirect(`/?page=${totalGroupPages}&view=groups`);
+
+const paginatedGroups = groupsWithData.slice((groupPage - 1) * groupsPerPage, groupPage * groupsPerPage);
+const groupPaginationNumbers = Array.from({ length: totalGroupPages }, (_, i) => i + 1);
 
 export const prerender = false;
 ---
 
 <Layout>
-    <section class="flex flex-col gap-8">
-        <ImagesGrid images={secureImages} />
-        <Pagination currentPage={currentPage} totalPages={totalPages} paginationNumbers={paginationNumbers} />
-    </section>
-
-    <ImageDialog client:load />
-
-    <script>
-        document.addEventListener("astro:page-load", () => {
-            const triggers = document.querySelectorAll(".lightbox-trigger");
-            
-            triggers.forEach((trigger) => {
-                trigger.addEventListener("click", (e) => {
-                    if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey)) {
-                        return;
-                    }
-                    
-                    e.preventDefault(); 
-                    
-                    const highResSrc = trigger.getAttribute("data-highres-src");
-                    const href = trigger.getAttribute("href"); 
-                    const rawInfo = trigger.getAttribute("data-photo-info");
-                    
-                    if (highResSrc && href) {
-                        const photoData = rawInfo ? JSON.parse(rawInfo) : {};
-
-                        window.dispatchEvent(new CustomEvent("open-lightbox", { 
-                            detail: { src: highResSrc, href: href, info: photoData } 
-                        }));
-                    }
-                });
-            });
-        });
-    </script>
+    <ViewTabs client:load defaultView={viewParam} flatContent={null} groupsContent={null}>
+        <div slot="flatContent">
+            <ImagesList
+                images={secureImages}
+                currentPage={flatPage}
+                totalPages={totalFlatPages}
+                paginationNumbers={flatPaginationNumbers}
+                baseUrl="/?view=flat&page="
+            />
+        </div>
+        <div slot="groupsContent">
+            <GroupsList 
+                groups={paginatedGroups} 
+                currentPage={groupPage} 
+                totalPages={totalGroupPages} 
+                paginationNumbers={groupPaginationNumbers} 
+            />
+        </div>
+    </ViewTabs>
 </Layout>

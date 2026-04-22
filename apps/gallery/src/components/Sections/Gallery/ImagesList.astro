@@ -1,0 +1,20 @@
+---
+import type { CloudinaryImage } from "@/lib/types";
+import ImagesGrid from "./ImagesGrid.astro";
+import Pagination from "./Pagination.astro";
+
+interface Props {
+    images: CloudinaryImage[];
+    currentPage: number;
+    totalPages: number;
+    paginationNumbers: number[];
+    baseUrl: string;
+}
+
+const { images, currentPage, totalPages, paginationNumbers, baseUrl } = Astro.props;
+---
+
+<section class="flex flex-col gap-8">
+    <ImagesGrid images={images} />
+    <Pagination currentPage={currentPage} totalPages={totalPages} paginationNumbers={paginationNumbers} baseUrl={baseUrl} />
+</section>

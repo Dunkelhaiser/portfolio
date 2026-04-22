@@ -1,5 +1,7 @@
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 
+import type { CollectionEntry } from "astro:content";
+
 interface CloudinaryContext {
     alt?: string;
     caption?: string;
@@ -50,4 +52,10 @@ export interface CloudinaryImageFlat {
     location?: string;
     takenAt?: number;
     tags?: string[];
+}
+
+export interface Group {
+    id: string;
+    previewSrc: string;
+    data?: CollectionEntry<"groups">["data"];
 }

@@ -1,0 +1,94 @@
+---
+/** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
+import { getEntry } from "astro:content";
+import { buttonVariants } from "@repo/ui/Button";
+import { ChevronLeft } from "@repo/ui/icons";
+import { v2 as cloudinary } from "cloudinary";
+import ImagesList from "@/components/Sections/Gallery/ImagesList.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
+import { calculateMasonryPages } from "@/lib/masonry";
+import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect("/?view=groups");
+
+const groupEntry = await getEntry("groups", slug);
+const groupName = groupEntry?.data.title ?? slug;
+const groupDescription = groupEntry?.data.description;
+
+cloudinary.config({
+    cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+    api_key: import.meta.env.CLOUDINARY_API_KEY,
+    api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+});
+
+const pageParam = Astro.url.searchParams.get("page") ?? "1";
+const currentPage = Number.parseInt(pageParam, 10) ?? 1;
+
+const searchExpression = `folder:gallery AND context.group=${slug}`;
+const maxResults = 500;
+
+const results = await cloudinary.search
+    .expression(searchExpression)
+    .with_field("tags")
+    .with_field("context")
+    .with_field("metadata")
+    .sort_by("metadata.takenAt", "asc")
+    .max_results(maxResults)
+    .execute();
+
+const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: CloudinaryResource) => ({
+    id: img.public_id,
+    tags: img.tags || [],
+    context: img.context || {},
+    metadata: img.metadata || {},
+    width: img.width,
+    height: img.height,
+}));
+
+if (allImages.length === 0) {
+    return Astro.redirect("/?view=groups");
+}
+
+const pages = calculateMasonryPages(allImages, {
+    targetPerPage: 12,
+    minPerPage: 9,
+    maxPerPage: 15,
+});
+
+const totalPages = pages.length;
+
+if (currentPage < 1) return Astro.redirect(`/group/${slug}?page=1`);
+if (currentPage > totalPages && totalPages > 0) return Astro.redirect(`/group/${slug}?page=${totalPages}`);
+
+const paginatedImages = totalPages > 0 && pages[currentPage - 1] ? pages[currentPage - 1] : [];
+const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
+    ...img,
+    previewSrc: getSignedUrl(img.id, PREVIEW_WIDTH),
+    highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
+}));
+
+export const prerender = false;
+---
+
+<Layout>
+    <div class="mb-8">
+        <a href="/?view=groups" class={buttonVariants({ variant: "ghost", className: "mb-6 -ml-4 text-muted-foreground" })}>
+            <ChevronLeft className="mr-2 size-4" />
+            Back to Groups
+        </a>
+        <h1 class="text-3xl font-bold">{groupName}</h1>
+        {groupDescription && <p class="text-muted-foreground mt-2 max-w-prose">{groupDescription}</p>}
+    </div>
+
+    <ImagesList 
+        images={secureImages} 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        paginationNumbers={paginationNumbers} 
+        baseUrl={`/group/${slug}?page=`} 
+    />
+</Layout>
