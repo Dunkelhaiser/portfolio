@@ -10,7 +10,7 @@ const { group } = Astro.props;
 ---
 
 
-<a href={`/group/${group.id}`} class="group relative aspect-square overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">
+<a href={`/group/${group.id}`} class="group relative aspect-4/3 overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">
     <img
         src={group.previewSrc}
         alt={group.data?.title ?? group.id}
