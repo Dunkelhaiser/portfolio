@@ -2,8 +2,8 @@
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getCollection } from "astro:content";
 import { v2 as cloudinary } from "cloudinary";
-import GroupsList from "@/components/Sections/Gallery/GroupsList.astro";
-import ImagesList from "@/components/Sections/Gallery/ImagesList.astro";
+import GroupsList from "@/components/Sections/Gallery/Groups/GroupsList.astro";
+import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import { ViewTabs } from "@/components/Sections/Gallery/ViewTabs";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
