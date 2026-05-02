@@ -33,6 +33,7 @@ let groupTitle: string | null = null;
 if (groupId) {
     const groupEntry = await getEntry("groups", groupId);
     groupTitle = groupEntry?.data.title ?? groupId;
+    metadata.groupTitle = groupTitle;
 }
 
 export const prerender = false;

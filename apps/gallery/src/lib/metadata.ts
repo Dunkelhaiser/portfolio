@@ -13,6 +13,7 @@ export const flattenImageMetadata = (source: CloudinaryImage | CloudinaryResourc
             location: source.metadata?.location,
             takenAt: source.metadata?.takenAt,
             tags: source.tags,
+            group: source.context?.custom?.group,
         };
     }
 
@@ -23,5 +24,7 @@ export const flattenImageMetadata = (source: CloudinaryImage | CloudinaryResourc
         location: source.metadata?.location,
         takenAt: source.metadata?.takenAt,
         tags: source.tags,
+        group: source.context?.group,
+        groupTitle: source.groupTitle,
     };
 };

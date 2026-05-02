@@ -24,6 +24,7 @@ export interface CloudinaryImage {
     metadata: CloudinaryMetadata;
     width?: number;
     height?: number;
+    groupTitle?: string;
 }
 
 export interface CloudinaryResource {
@@ -52,6 +53,8 @@ export interface CloudinaryImageFlat {
     location?: string;
     takenAt?: number;
     tags?: string[];
+    group?: string;
+    groupTitle?: string;
 }
 
 export interface Group {
