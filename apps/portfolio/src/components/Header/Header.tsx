@@ -1,5 +1,6 @@
 // biome-ignore-all lint/style/useNamingConvention: Icon names match Lucide exports
 import { useEffect, useState } from "react";
+import GalleryBtn from "./GalleryBtn";
 import HeaderLink from "./HeaderLink";
 import ThemeToggle from "./ThemeToggle";
 
@@ -73,6 +74,8 @@ const Header = () => {
                 ))}
                 <div className="w-px h-6 bg-border md:w-6 md:h-px mx-auto my-auto" />
                 <ThemeToggle />
+                <div className="w-px h-6 bg-border md:w-6 md:h-px mx-auto my-auto" />
+                <GalleryBtn />
             </nav>
         </header>
     );
