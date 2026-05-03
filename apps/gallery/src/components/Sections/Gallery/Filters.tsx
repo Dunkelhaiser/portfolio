@@ -22,13 +22,13 @@ const Filters = ({
     availableLocations,
     selectedLocations,
 }: TagFilterProps) => {
-    const [value, setValue] = useState<Option[]>(selectedTags);
+    const [tagsValue, setTagsValue] = useState<Option[]>(selectedTags);
     const [cameraValue, setCameraValue] = useState<Option[]>(selectedCameras);
     const [locationValue, setLocationValue] = useState<Option[]>(selectedLocations);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        setValue(selectedTags);
+        setTagsValue(selectedTags);
     }, [selectedTags]);
 
     useEffect(() => {
@@ -39,11 +39,17 @@ const Filters = ({
         setLocationValue(selectedLocations);
     }, [selectedLocations]);
 
+    const handleClear = () => {
+        setTagsValue([]);
+        setCameraValue([]);
+        setLocationValue([]);
+    };
+
     const handleApply = () => {
         const url = new URL(window.location.href);
 
-        if (value.length > 0) {
-            url.searchParams.set("tags", value.map((o) => o.value).join(","));
+        if (tagsValue.length > 0) {
+            url.searchParams.set("tags", tagsValue.map((o) => o.value).join(","));
         } else {
             url.searchParams.delete("tags");
         }
@@ -89,10 +95,10 @@ const Filters = ({
                     <div className="space-y-2">
                         <span className="text-sm font-medium">Tags</span>
                         <MultipleSelector
-                            value={value}
+                            value={tagsValue}
                             defaultOptions={availableTags}
                             placeholder="Select tags..."
-                            onChange={setValue}
+                            onChange={setTagsValue}
                         />
                     </div>
                     <div className="space-y-2">
@@ -115,6 +121,9 @@ const Filters = ({
                     </div>
                 </div>
                 <DialogFooter>
+                    <Button variant="ghost" onClick={handleClear}>
+                        Clear Filters
+                    </Button>
                     <Button onClick={handleApply}>Apply Filters</Button>
                 </DialogFooter>
             </DialogContent>
