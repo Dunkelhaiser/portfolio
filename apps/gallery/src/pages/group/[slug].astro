@@ -5,12 +5,14 @@ import { Badge } from "@repo/ui/Badge";
 import { buttonVariants } from "@repo/ui/Button";
 import { Calendar, ChevronLeft, MapPin } from "@repo/ui/icons";
 import { v2 as cloudinary } from "cloudinary";
+import EmptyState from "@/components/Sections/Gallery/EmptyState.astro";
+import { Filters } from "@/components/Sections/Gallery/Filters";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
-import { formatCameraName, unixToDate } from "@/lib/utils";
+import { formatCameraName, getDaypart, unixToDate } from "@/lib/utils";
 
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect("/?view=groups");
@@ -26,7 +28,22 @@ cloudinary.config({
 });
 
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
+const tagsParam = Astro.url.searchParams.get("tags") ?? "";
+const selectedTagsArray = tagsParam ? tagsParam.split(",") : [];
+const camerasParam = Astro.url.searchParams.get("cameras") ?? "";
+const selectedCamerasArray = camerasParam ? camerasParam.split(",") : [];
+const locationsParam = Astro.url.searchParams.get("locations") ?? "";
+const selectedLocationsArray = locationsParam ? locationsParam.split(",") : [];
+const daypartsParam = Astro.url.searchParams.get("dayparts") ?? "";
+const selectedDaypartsArray = daypartsParam ? daypartsParam.split(",") : [];
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
+
+const queryTags = tagsParam ? `tags=${tagsParam}` : "";
+const queryCameras = camerasParam ? `cameras=${camerasParam}` : "";
+const queryLocations = locationsParam ? `locations=${locationsParam}` : "";
+const queryDayparts = daypartsParam ? `dayparts=${daypartsParam}` : "";
+const queryParts = [queryTags, queryCameras, queryLocations, queryDayparts].filter(Boolean);
+const queryStr = queryParts.length > 0 ? `&${queryParts.join("&")}` : "";
 
 const searchExpression = `folder:gallery AND context.group=${slug}`;
 const maxResults = 500;
@@ -49,9 +66,48 @@ const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: Cl
     height: img.height,
 }));
 
-const uniqueTags = Array.from(new Set(allImages.flatMap((img) => img.tags || []))).sort();
-const uniqueCameras = Array.from(new Set(allImages.map((img) => img.metadata?.camera).filter(Boolean))).sort();
-const uniqueLocations = Array.from(new Set(allImages.map((img) => img.metadata?.location).filter(Boolean))).sort();
+const availableTagsSet = new Set<string>();
+const availableCamerasSet = new Set<string>();
+const availableLocationsSet = new Set<string>();
+const availableDaypartsSet = new Set<string>();
+
+for (const img of allImages) {
+    for (const tag of img.tags) {
+        availableTagsSet.add(tag);
+    }
+    if (img.metadata?.camera) {
+        availableCamerasSet.add(img.metadata.camera);
+    }
+    if (img.metadata?.location) {
+        availableLocationsSet.add(img.metadata.location);
+    }
+    const daypart = getDaypart(img.metadata?.takenAt);
+    if (daypart) {
+        availableDaypartsSet.add(daypart);
+    }
+}
+
+const availableTags = Array.from(availableTagsSet)
+    .sort()
+    .map((t) => ({ label: t, value: t }));
+const selectedTagsOptions = selectedTagsArray.map((t) => ({ label: t, value: t }));
+
+const availableCameras = Array.from(availableCamerasSet)
+    .sort()
+    .map((c) => ({ label: formatCameraName(c), value: c }));
+const selectedCamerasOptions = selectedCamerasArray.map((c) => ({ label: formatCameraName(c), value: c }));
+
+const availableLocations = Array.from(availableLocationsSet)
+    .sort()
+    .map((l) => ({ label: l, value: l }));
+const selectedLocationsOptions = selectedLocationsArray.map((l) => ({ label: l, value: l }));
+
+const DAYPART_ORDER = ["Dawn", "Morning", "Afternoon", "Twilight", "Evening", "Night"];
+const availableDayparts = Array.from(availableDaypartsSet)
+    .sort((a, b) => DAYPART_ORDER.indexOf(a) - DAYPART_ORDER.indexOf(b))
+    .map((d) => ({ label: d, value: d }));
+const selectedDaypartsOptions = selectedDaypartsArray.map((d) => ({ label: d, value: d }));
+
 const uniqueDates = Array.from(
     new Set(
         allImages
@@ -61,12 +117,24 @@ const uniqueDates = Array.from(
             .map((timestamp) => unixToDate(timestamp))
     )
 );
+const uniqueLocations = Array.from(availableLocationsSet).sort();
 
 if (allImages.length === 0) {
     return Astro.redirect("/?view=groups");
 }
 
-const pages = calculateMasonryPages(allImages, {
+const filteredImages = allImages.filter((img) => {
+    const matchesTags = selectedTagsArray.length === 0 || selectedTagsArray.every((tag) => img.tags.includes(tag));
+    const matchesCameras =
+        selectedCamerasArray.length === 0 || selectedCamerasArray.includes(img.metadata?.camera ?? "");
+    const matchesLocations =
+        selectedLocationsArray.length === 0 || selectedLocationsArray.includes(img.metadata?.location ?? "");
+    const matchesDayparts =
+        selectedDaypartsArray.length === 0 || selectedDaypartsArray.includes(getDaypart(img.metadata?.takenAt) ?? "");
+    return matchesTags && matchesCameras && matchesLocations && matchesDayparts;
+});
+
+const pages = calculateMasonryPages(filteredImages, {
     targetPerPage: 12,
     minPerPage: 9,
     maxPerPage: 15,
@@ -74,8 +142,8 @@ const pages = calculateMasonryPages(allImages, {
 
 const totalPages = pages.length;
 
-if (currentPage < 1) return Astro.redirect(`/group/${slug}?page=1`);
-if (currentPage > totalPages && totalPages > 0) return Astro.redirect(`/group/${slug}?page=${totalPages}`);
+if (currentPage < 1) return Astro.redirect(`/group/${slug}?page=1${queryStr}`);
+if (currentPage > totalPages && totalPages > 0) return Astro.redirect(`/group/${slug}?page=${totalPages}${queryStr}`);
 
 const paginatedImages = totalPages > 0 && pages[currentPage - 1] ? pages[currentPage - 1] : [];
 const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -115,31 +183,30 @@ export const prerender = false;
 
         {groupDescription && <p class="text-muted-foreground mt-2 max-w-prose">{groupDescription}</p>}
         
-        {(uniqueTags.length > 0 || uniqueCameras.length > 0) && (
-            <div class="mt-6 flex flex-col gap-3">
-                {uniqueCameras.length > 0 && (
-                    <div class="flex flex-wrap items-center gap-2">
-                        {uniqueCameras.map((camera) => (
-                            <Badge variant="outline">{formatCameraName(camera)}</Badge>
-                        ))}
-                    </div>
-                )}
-                {uniqueTags.length > 0 && (
-                    <div class="flex flex-wrap items-center gap-2">
-                        {uniqueTags.map((tag) => (
-                            <Badge variant="secondary">{tag}</Badge>
-                        ))}
-                    </div>
-                )}
-            </div>
-        )}
+        <div class="mt-6">
+            <Filters 
+                client:load 
+                availableTags={availableTags} 
+                selectedTags={selectedTagsOptions} 
+                availableCameras={availableCameras}
+                selectedCameras={selectedCamerasOptions}
+                availableLocations={availableLocations}
+                selectedLocations={selectedLocationsOptions}
+                availableDayparts={availableDayparts}
+                selectedDayparts={selectedDaypartsOptions}
+            />
+        </div>
     </div>
 
-    <ImagesList 
-        images={secureImages} 
-        currentPage={currentPage} 
-        totalPages={totalPages} 
-        paginationNumbers={paginationNumbers} 
-        baseUrl={`/group/${slug}?page=`} 
-    />
+    {secureImages.length > 0 ? (
+        <ImagesList 
+            images={secureImages} 
+            currentPage={currentPage} 
+            totalPages={totalPages} 
+            paginationNumbers={paginationNumbers} 
+            baseUrl={`/group/${slug}?${queryStr ? queryStr.slice(1) + '&' : ''}page=`} 
+        />
+    ) : (
+        <EmptyState itemType="photos" clearUrl={`/group/${slug}`} />
+    )}
 </Layout>
