@@ -8,23 +8,38 @@ import { useEffect, useState } from "react";
 interface TagFilterProps {
     availableTags: Option[];
     selectedTags: Option[];
+    availableCameras: Option[];
+    selectedCameras: Option[];
 }
 
-const Filters = ({ availableTags, selectedTags }: TagFilterProps) => {
+const Filters = ({ availableTags, selectedTags, availableCameras, selectedCameras }: TagFilterProps) => {
     const [value, setValue] = useState<Option[]>(selectedTags);
+    const [cameraValue, setCameraValue] = useState<Option[]>(selectedCameras);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         setValue(selectedTags);
     }, [selectedTags]);
 
+    useEffect(() => {
+        setCameraValue(selectedCameras);
+    }, [selectedCameras]);
+
     const handleApply = () => {
         const url = new URL(window.location.href);
+
         if (value.length > 0) {
             url.searchParams.set("tags", value.map((o) => o.value).join(","));
         } else {
             url.searchParams.delete("tags");
         }
+
+        if (cameraValue.length > 0) {
+            url.searchParams.set("cameras", cameraValue.map((o) => o.value).join(","));
+        } else {
+            url.searchParams.delete("cameras");
+        }
+
         url.searchParams.set("page", "1");
 
         setOpen(false);
@@ -38,9 +53,9 @@ const Filters = ({ availableTags, selectedTags }: TagFilterProps) => {
                     <Button variant="outline" size="sm">
                         <Filter className="size-4" />
                         Filters
-                        {selectedTags.length > 0 && (
+                        {(selectedTags.length > 0 || selectedCameras.length > 0) && (
                             <span className="ml-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
-                                {selectedTags.length}
+                                {selectedTags.length + selectedCameras.length}
                             </span>
                         )}
                     </Button>
@@ -50,13 +65,25 @@ const Filters = ({ availableTags, selectedTags }: TagFilterProps) => {
                 <DialogHeader>
                     <DialogTitle>Filters</DialogTitle>
                 </DialogHeader>
-                <div className="py-4">
-                    <MultipleSelector
-                        value={value}
-                        defaultOptions={availableTags}
-                        placeholder="Select tags..."
-                        onChange={setValue}
-                    />
+                <div className="py-4 space-y-4">
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Tags</span>
+                        <MultipleSelector
+                            value={value}
+                            defaultOptions={availableTags}
+                            placeholder="Select tags..."
+                            onChange={setValue}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Cameras</span>
+                        <MultipleSelector
+                            value={cameraValue}
+                            defaultOptions={availableCameras}
+                            placeholder="Select cameras..."
+                            onChange={setCameraValue}
+                        />
+                    </div>
                 </div>
                 <DialogFooter>
                     <Button onClick={handleApply}>Apply Filters</Button>
