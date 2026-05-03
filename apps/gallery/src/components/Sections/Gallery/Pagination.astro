@@ -1,4 +1,5 @@
 ---
+import { cn } from "@repo/tailwind";
 import { buttonVariants } from "@repo/ui/Button";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "@repo/ui/icons";
 
@@ -34,7 +35,10 @@ const { currentPage, totalPages, paginationNumbers, baseUrl = "/?page=" } = Astr
     {paginationNumbers.map((num) => (
         <a 
             href={`${baseUrl}${num}`}
-            class={buttonVariants({ variant: currentPage === num ? "default" : "outline", size: "icon-sm" })}
+            class={cn(
+                buttonVariants({ variant: currentPage === num ? "default" : "outline", size: "icon-sm" }),
+                Math.abs(currentPage - num) > 1 && "hidden sm:inline-flex"
+            )}
         >
             {num}
         </a>
