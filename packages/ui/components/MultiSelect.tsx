@@ -1,4 +1,7 @@
 /** biome-ignore-all lint/correctness/useSingleJsDocAsterisk: not my component */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not my component */
+/** biome-ignore-all lint/a11y/useFocusableInteractive: not my component */
+/** biome-ignore-all lint/a11y/useSemanticElements: not my component */
 /** biome-ignore-all lint/style/useExportsLast: not my component */
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: not my component */
 /** biome-ignore-all lint/style/noMagicNumbers: not my component */
@@ -470,8 +473,8 @@ const MultipleSelector = ({
                                 data-disabled={disabled || undefined}
                             >
                                 {option.label}
-                                <button
-                                    type="button"
+                                <div
+                                    role="button"
                                     className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute -inset-y-px -right-px flex size-7 items-center justify-center rounded-r-md border border-transparent p-0 outline-hidden transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
@@ -486,7 +489,7 @@ const MultipleSelector = ({
                                     aria-label="Remove"
                                 >
                                     <XIcon size={14} aria-hidden="true" />
-                                </button>
+                                </div>
                             </div>
                         );
                     })}
@@ -527,8 +530,8 @@ const MultipleSelector = ({
                             inputProps?.className
                         )}
                     />
-                    <button
-                        type="button"
+                    <div
+                        role="button"
                         onClick={() => {
                             setSelected(selected.filter((s) => s.fixed));
                             onChange?.(selected.filter((s) => s.fixed));
@@ -544,7 +547,7 @@ const MultipleSelector = ({
                         aria-label="Clear all"
                     >
                         <XIcon size={16} aria-hidden="true" />
-                    </button>
+                    </div>
                 </div>
             </button>
             <div className="relative">
