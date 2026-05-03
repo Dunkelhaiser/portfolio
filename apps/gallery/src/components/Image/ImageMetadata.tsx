@@ -9,10 +9,7 @@ interface Props {
     className?: string;
 }
 
-const ImageMetadata = ({
-    metadata: { title, description, camera, location, takenAt, tags, group, groupTitle },
-    className,
-}: Props) => {
+const ImageMetadata = ({ metadata: { camera, location, takenAt, tags, group, groupTitle }, className }: Props) => {
     const date = takenAt ? unixToDate(takenAt, true) : null;
     const isoDate = takenAt ? unixToISODate(takenAt) : null;
 
@@ -23,10 +20,10 @@ const ImageMetadata = ({
                 className
             )}
         >
-            <div>
+            {/* <div>
                 <h2 className="text-2xl font-bold font-heading text-foreground mb-2">{title || "Untitled"}</h2>
                 {description && <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>}
-            </div>
+            </div> */}
 
             {group && (
                 <a
