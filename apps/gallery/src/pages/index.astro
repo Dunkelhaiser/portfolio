@@ -1,31 +1,19 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getCollection } from "astro:content";
-import { v2 as cloudinary } from "cloudinary";
 import EmptyState from "@/components/Sections/Gallery/EmptyState.astro";
 import { Filters } from "@/components/Sections/Gallery/Filters";
 import GroupsList from "@/components/Sections/Gallery/Groups/GroupsList.astro";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import { ViewTabs } from "@/components/Sections/Gallery/ViewTabs";
 import Layout from "@/layouts/Layout.astro";
-import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
+import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH, searchImages } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 import { formatCameraName, getDaypart, getSeason } from "@/lib/utils";
 
-// cloudinary.config({
-//     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: import.meta.env.CLOUDINARY_API_KEY,
-//     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
-// });
 // @ts-expect-error
 const env = Astro.locals.runtime.env;
-
-cloudinary.config({
-    cloud_name: env.CLOUDINARY_CLOUD_NAME,
-    api_key: env.CLOUDINARY_API_KEY,
-    api_secret: env.CLOUDINARY_API_SECRET,
-});
 
 const viewParam = Astro.url.searchParams.get("view") ?? "flat";
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
@@ -56,14 +44,14 @@ const groupPage = isFlat ? 1 : currentPage;
 const searchExpression = "folder:gallery";
 const maxResults = 500;
 
-const results = await cloudinary.search
-    .expression(searchExpression)
-    .with_field("tags")
-    .with_field("context")
-    .with_field("metadata")
-    .sort_by("metadata.takenAt", "desc")
-    .max_results(maxResults)
-    .execute();
+const results = await searchImages(
+    searchExpression,
+    maxResults,
+    env.CLOUDINARY_CLOUD_NAME,
+    env.CLOUDINARY_API_KEY,
+    env.CLOUDINARY_API_SECRET,
+    "desc"
+);
 
 const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: CloudinaryResource) => ({
     id: img.public_id,
@@ -159,12 +147,14 @@ for (const cg of contentGroups) {
     groupTitleMap.set(groupId, cg.data.title);
 }
 
-const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
-    ...img,
-    previewSrc: getSignedUrl(img.id, PREVIEW_WIDTH),
-    highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
-    groupTitle: img.context?.group ? (groupTitleMap.get(img.context.group) ?? img.context.group) : undefined,
-}));
+const secureImages: CloudinaryImage[] = await Promise.all(
+    paginatedImages.map(async (img) => ({
+        ...img,
+        previewSrc: await getSignedUrl(img.id, PREVIEW_WIDTH, env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_SECRET),
+        highResSrc: await getSignedUrl(img.id, HIGH_RES_WIDTH, env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_SECRET),
+        groupTitle: img.context?.group ? (groupTitleMap.get(img.context.group) ?? img.context.group) : undefined,
+    }))
+);
 
 const groupMap = new Map<
     string,
@@ -213,16 +203,23 @@ for (const img of allImages) {
     }
 }
 
-const allGroupsList = Array.from(groupMap.entries()).map(
-    ([groupId, { previewImg, tags, cameras, locations, dayparts, seasons }]) => ({
-        id: groupId,
-        previewSrc: getSignedUrl(previewImg.id, PREVIEW_WIDTH),
-        tags: Array.from(tags).sort(),
-        cameras: Array.from(cameras),
-        locations: Array.from(locations).sort(),
-        dayparts: Array.from(dayparts).sort((a, b) => DAYPART_ORDER.indexOf(a) - DAYPART_ORDER.indexOf(b)),
-        seasons: Array.from(seasons).sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b)),
-    })
+const allGroupsList = await Promise.all(
+    Array.from(groupMap.entries()).map(
+        async ([groupId, { previewImg, tags, cameras, locations, dayparts, seasons }]) => ({
+            id: groupId,
+            previewSrc: await getSignedUrl(
+                previewImg.id,
+                PREVIEW_WIDTH,
+                env.CLOUDINARY_CLOUD_NAME,
+                env.CLOUDINARY_API_SECRET
+            ),
+            tags: Array.from(tags).sort(),
+            cameras: Array.from(cameras),
+            locations: Array.from(locations).sort(),
+            dayparts: Array.from(dayparts).sort((a, b) => DAYPART_ORDER.indexOf(a) - DAYPART_ORDER.indexOf(b)),
+            seasons: Array.from(seasons).sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b)),
+        })
+    )
 );
 
 const filteredGroupsList = allGroupsList.filter((g) => {
@@ -237,17 +234,24 @@ const filteredGroupsList = allGroupsList.filter((g) => {
     return matchesTags && matchesCameras && matchesLocations && matchesDayparts && matchesSeasons;
 });
 
-const groupsWithData = filteredGroupsList.map((group) => {
-    const contentGroup = contentGroups.find((c) => c.id.split(".md")[0] === group.id);
-    const data = contentGroup?.data;
+const groupsWithData = await Promise.all(
+    filteredGroupsList.map(async (group) => {
+        const contentGroup = contentGroups.find((c) => c.id.split(".md")[0] === group.id);
+        const data = contentGroup?.data;
 
-    let previewSrc = group.previewSrc;
-    if (data?.previewImageId) {
-        previewSrc = getSignedUrl(data.previewImageId, PREVIEW_WIDTH);
-    }
+        let previewSrc = group.previewSrc;
+        if (data?.previewImageId) {
+            previewSrc = await getSignedUrl(
+                data.previewImageId,
+                PREVIEW_WIDTH,
+                env.CLOUDINARY_CLOUD_NAME,
+                env.CLOUDINARY_API_SECRET
+            );
+        }
 
-    return { ...group, data, previewSrc };
-});
+        return { ...group, data, previewSrc };
+    })
+);
 
 const groupsPerPage = 12;
 const totalGroupPages = Math.ceil(groupsWithData.length / groupsPerPage);

@@ -2,25 +2,27 @@
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getEntry } from "astro:content";
 import { ChevronRight } from "@repo/ui/icons";
-import { v2 as cloudinary } from "cloudinary";
 import { ImageArea } from "@/components/Image/ImageArea";
 import { ImageMetadata } from "@/components/Image/ImageMetadata";
 import Layout from "@/layouts/Layout.astro";
-import { getSignedUrl, HIGH_RES_WIDTH } from "@/lib/cloudinary";
+import { getResource, getSignedUrl, HIGH_RES_WIDTH } from "@/lib/cloudinary";
 import { flattenImageMetadata } from "@/lib/metadata";
 import type { CloudinaryResourceById } from "@/lib/types";
 
 const { id } = Astro.params;
 const decodedId = decodeURIComponent(id as string);
 
-const url = getSignedUrl(decodedId, HIGH_RES_WIDTH);
+// @ts-expect-error
+const env = Astro.locals.runtime.env;
 
-const resource: CloudinaryResourceById | null = await cloudinary.api.resource(decodedId, {
-    type: "authenticated",
-    tags: true,
-    context: true,
-    metadata: true,
-});
+const url = await getSignedUrl(decodedId, HIGH_RES_WIDTH, env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_SECRET);
+
+const resource: CloudinaryResourceById | null = await getResource(
+    decodedId,
+    env.CLOUDINARY_CLOUD_NAME,
+    env.CLOUDINARY_API_KEY,
+    env.CLOUDINARY_API_SECRET
+);
 
 if (!resource) {
     return Astro.redirect("/");

@@ -3,12 +3,11 @@
 import { getEntry } from "astro:content";
 import { buttonVariants } from "@repo/ui/Button";
 import { Calendar, ChevronLeft, MapPin } from "@repo/ui/icons";
-import { v2 as cloudinary } from "cloudinary";
 import EmptyState from "@/components/Sections/Gallery/EmptyState.astro";
 import { Filters } from "@/components/Sections/Gallery/Filters";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import Layout from "@/layouts/Layout.astro";
-import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
+import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH, searchImages } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 import { formatCameraName, getDaypart, getSeason, unixToDate } from "@/lib/utils";
@@ -20,19 +19,8 @@ const groupEntry = await getEntry("groups", slug);
 const groupName = groupEntry?.data.title ?? slug;
 const groupDescription = groupEntry?.data.description;
 
-// cloudinary.config({
-//     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: import.meta.env.CLOUDINARY_API_KEY,
-//     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
-// });
 // @ts-expect-error
 const env = Astro.locals.runtime.env;
-
-cloudinary.config({
-    cloud_name: env.CLOUDINARY_CLOUD_NAME,
-    api_key: env.CLOUDINARY_API_KEY,
-    api_secret: env.CLOUDINARY_API_SECRET,
-});
 
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
 const tagsParam = Astro.url.searchParams.get("tags") ?? "";
@@ -58,14 +46,14 @@ const queryStr = queryParts.length > 0 ? `&${queryParts.join("&")}` : "";
 const searchExpression = `folder:gallery AND context.group=${slug}`;
 const maxResults = 500;
 
-const results = await cloudinary.search
-    .expression(searchExpression)
-    .with_field("tags")
-    .with_field("context")
-    .with_field("metadata")
-    .sort_by("metadata.takenAt", "asc")
-    .max_results(maxResults)
-    .execute();
+const results = await searchImages(
+    searchExpression,
+    maxResults,
+    env.CLOUDINARY_CLOUD_NAME,
+    env.CLOUDINARY_API_KEY,
+    env.CLOUDINARY_API_SECRET,
+    "asc"
+);
 
 const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: CloudinaryResource) => ({
     id: img.public_id,
@@ -171,12 +159,14 @@ if (currentPage > totalPages && totalPages > 0) return Astro.redirect(`/group/${
 const paginatedImages = totalPages > 0 && pages[currentPage - 1] ? pages[currentPage - 1] : [];
 const paginationNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
-    ...img,
-    previewSrc: getSignedUrl(img.id, PREVIEW_WIDTH),
-    highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
-    groupTitle: groupName,
-}));
+const secureImages: CloudinaryImage[] = await Promise.all(
+    paginatedImages.map(async (img) => ({
+        ...img,
+        previewSrc: await getSignedUrl(img.id, PREVIEW_WIDTH, env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_SECRET),
+        highResSrc: await getSignedUrl(img.id, HIGH_RES_WIDTH, env.CLOUDINARY_CLOUD_NAME, env.CLOUDINARY_API_SECRET),
+        groupTitle: groupName,
+    }))
+);
 ---
 
 <Layout>
