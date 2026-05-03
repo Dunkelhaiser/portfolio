@@ -250,8 +250,6 @@ if (!isFlat && currentPage > totalGroupPages && totalGroupPages > 0)
 
 const paginatedGroups = groupsWithData.slice((groupPage - 1) * groupsPerPage, groupPage * groupsPerPage);
 const groupPaginationNumbers = Array.from({ length: totalGroupPages }, (_, i) => i + 1);
-
-export const prerender = false;
 ---
 
 <Layout>

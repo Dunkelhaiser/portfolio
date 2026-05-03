@@ -169,8 +169,6 @@ const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
     highResSrc: getSignedUrl(img.id, HIGH_RES_WIDTH),
     groupTitle: groupName,
 }));
-
-export const prerender = false;
 ---
 
 <Layout>
