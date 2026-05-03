@@ -88,6 +88,13 @@ const Filters = ({
         navigate(url.toString());
     };
 
+    const appliedFiltersCount = [
+        selectedTags.length > 0,
+        selectedCameras.length > 0,
+        selectedLocations.length > 0,
+        selectedDayparts.length > 0,
+    ].filter(Boolean).length;
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger
@@ -95,15 +102,9 @@ const Filters = ({
                     <Button variant="outline" size="sm">
                         <Filter className="size-4" />
                         Filters
-                        {(selectedTags.length > 0 ||
-                            selectedCameras.length > 0 ||
-                            selectedLocations.length > 0 ||
-                            selectedDayparts.length > 0) && (
-                            <span className="ml-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
-                                {selectedTags.length +
-                                    selectedCameras.length +
-                                    selectedLocations.length +
-                                    selectedDayparts.length}
+                        {appliedFiltersCount > 0 && (
+                            <span className="ml-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                                {appliedFiltersCount}
                             </span>
                         )}
                     </Button>
