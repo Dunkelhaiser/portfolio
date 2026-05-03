@@ -5,9 +5,10 @@ interface Props {
     defaultView: string;
     flatContent: ReactNode;
     groupsContent: ReactNode;
+    filtersContent?: ReactNode;
 }
 
-const ViewTabs = ({ defaultView, flatContent, groupsContent }: Props) => {
+const ViewTabs = ({ defaultView, flatContent, groupsContent, filtersContent }: Props) => {
     return (
         <Tabs
             defaultValue={defaultView}
@@ -19,10 +20,13 @@ const ViewTabs = ({ defaultView, flatContent, groupsContent }: Props) => {
                 setTimeout(() => window.dispatchEvent(new Event("resize")), 10);
             }}
         >
-            <TabsList>
-                <TabsTrigger value="flat">All Photos</TabsTrigger>
-                <TabsTrigger value="groups">Groups</TabsTrigger>
-            </TabsList>
+            <div className="flex items-center justify-between w-full gap-4">
+                <TabsList>
+                    <TabsTrigger value="flat">All Photos</TabsTrigger>
+                    <TabsTrigger value="groups">Groups</TabsTrigger>
+                </TabsList>
+                {filtersContent}
+            </div>
             <TabsContent value="flat" keepMounted>
                 {flatContent}
             </TabsContent>

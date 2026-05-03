@@ -8,14 +8,15 @@ interface Props {
     currentPage: number;
     totalPages: number;
     paginationNumbers: number[];
+    baseUrl?: string;
 }
 
-const { groups, currentPage, totalPages, paginationNumbers } = Astro.props;
+const { groups, currentPage, totalPages, paginationNumbers, baseUrl = "/?view=groups&page=" } = Astro.props;
 ---
 
 <section class="flex flex-col gap-8">
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
         {groups.map((group) => <GroupItem group={group} />)}
     </div>
-    <Pagination currentPage={currentPage} totalPages={totalPages} paginationNumbers={paginationNumbers} baseUrl="/?view=groups&page=" />
+    <Pagination currentPage={currentPage} totalPages={totalPages} paginationNumbers={paginationNumbers} baseUrl={baseUrl} />
 </section>

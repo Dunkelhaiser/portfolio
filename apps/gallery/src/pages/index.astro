@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getCollection } from "astro:content";
 import { v2 as cloudinary } from "cloudinary";
+import { Filters } from "@/components/Sections/Gallery/Filters";
 import GroupsList from "@/components/Sections/Gallery/Groups/GroupsList.astro";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
 import { ViewTabs } from "@/components/Sections/Gallery/ViewTabs";
@@ -18,7 +19,11 @@ cloudinary.config({
 
 const viewParam = Astro.url.searchParams.get("view") ?? "flat";
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
+const tagsParam = Astro.url.searchParams.get("tags") ?? "";
+const selectedTagsArray = tagsParam ? tagsParam.split(",") : [];
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
+
+const queryStr = tagsParam ? `&tags=${tagsParam}` : "";
 
 const isFlat = viewParam === "flat";
 const flatPage = isFlat ? currentPage : 1;
@@ -45,16 +50,32 @@ const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: Cl
     height: img.height,
 }));
 
-const pages = calculateMasonryPages(allImages, {
+const availableTagsSet = new Set<string>();
+for (const img of allImages) {
+    for (const tag of img.tags) {
+        availableTagsSet.add(tag);
+    }
+}
+const availableTags = Array.from(availableTagsSet)
+    .sort()
+    .map((t) => ({ label: t, value: t }));
+const selectedTagsOptions = selectedTagsArray.map((t) => ({ label: t, value: t }));
+
+const filteredImages =
+    selectedTagsArray.length > 0
+        ? allImages.filter((img) => selectedTagsArray.every((tag) => img.tags.includes(tag)))
+        : allImages;
+
+const pages = calculateMasonryPages(filteredImages, {
     targetPerPage: 12,
     minPerPage: 9,
     maxPerPage: 15,
 });
 
 const totalFlatPages = pages.length;
-if (isFlat && currentPage < 1) return Astro.redirect("/?page=1&view=flat");
+if (isFlat && currentPage < 1) return Astro.redirect(`/?page=1&view=flat${queryStr}`);
 if (isFlat && currentPage > totalFlatPages && totalFlatPages > 0)
-    return Astro.redirect(`/?page=${totalFlatPages}&view=flat`);
+    return Astro.redirect(`/?page=${totalFlatPages}&view=flat${queryStr}`);
 
 const paginatedImages = totalFlatPages > 0 && pages[flatPage - 1] ? pages[flatPage - 1] : [];
 const flatPaginationNumbers = Array.from({ length: totalFlatPages }, (_, i) => i + 1);
@@ -95,7 +116,12 @@ const allGroupsList = Array.from(groupMap.entries()).map(([groupId, { previewImg
     tags: Array.from(tags).sort(),
 }));
 
-const groupsWithData = allGroupsList.map((group) => {
+const filteredGroupsList =
+    selectedTagsArray.length > 0
+        ? allGroupsList.filter((g) => selectedTagsArray.every((tag) => g.tags.includes(tag)))
+        : allGroupsList;
+
+const groupsWithData = filteredGroupsList.map((group) => {
     const contentGroup = contentGroups.find((c) => c.id.split(".md")[0] === group.id);
     const data = contentGroup?.data;
 
@@ -110,9 +136,9 @@ const groupsWithData = allGroupsList.map((group) => {
 const groupsPerPage = 12;
 const totalGroupPages = Math.ceil(groupsWithData.length / groupsPerPage);
 
-if (!isFlat && currentPage < 1) return Astro.redirect("/?page=1&view=groups");
+if (!isFlat && currentPage < 1) return Astro.redirect(`/?page=1&view=groups${queryStr}`);
 if (!isFlat && currentPage > totalGroupPages && totalGroupPages > 0)
-    return Astro.redirect(`/?page=${totalGroupPages}&view=groups`);
+    return Astro.redirect(`/?page=${totalGroupPages}&view=groups${queryStr}`);
 
 const paginatedGroups = groupsWithData.slice((groupPage - 1) * groupsPerPage, groupPage * groupsPerPage);
 const groupPaginationNumbers = Array.from({ length: totalGroupPages }, (_, i) => i + 1);
@@ -121,14 +147,17 @@ export const prerender = false;
 ---
 
 <Layout>
-    <ViewTabs client:load defaultView={viewParam} flatContent={null} groupsContent={null}>
+    <ViewTabs client:load defaultView={viewParam} flatContent={null} groupsContent={null} filtersContent={null}>
+        <div slot="filtersContent">
+            <Filters client:load availableTags={availableTags} selectedTags={selectedTagsOptions} />
+        </div>
         <div slot="flatContent">
             <ImagesList
                 images={secureImages}
                 currentPage={flatPage}
                 totalPages={totalFlatPages}
                 paginationNumbers={flatPaginationNumbers}
-                baseUrl="/?view=flat&page="
+                baseUrl={`/?view=flat${queryStr}&page=`}
             />
         </div>
         <div slot="groupsContent">
@@ -137,6 +166,7 @@ export const prerender = false;
                 currentPage={groupPage} 
                 totalPages={totalGroupPages} 
                 paginationNumbers={groupPaginationNumbers} 
+                baseUrl={`/?view=groups${queryStr}&page=`}
             />
         </div>
     </ViewTabs>
