@@ -13,10 +13,18 @@ import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
 import { formatCameraName, getDaypart, getSeason } from "@/lib/utils";
 
+// cloudinary.config({
+//     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+//     api_key: import.meta.env.CLOUDINARY_API_KEY,
+//     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+// });
+// @ts-expect-error
+const env = Astro.locals.runtime.env;
+
 cloudinary.config({
-    cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
-    api_key: import.meta.env.CLOUDINARY_API_KEY,
-    api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
 });
 
 const viewParam = Astro.url.searchParams.get("view") ?? "flat";

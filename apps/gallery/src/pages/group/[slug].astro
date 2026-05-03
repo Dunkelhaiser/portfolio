@@ -20,10 +20,18 @@ const groupEntry = await getEntry("groups", slug);
 const groupName = groupEntry?.data.title ?? slug;
 const groupDescription = groupEntry?.data.description;
 
+// cloudinary.config({
+//     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+//     api_key: import.meta.env.CLOUDINARY_API_KEY,
+//     api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+// });
+// @ts-expect-error
+const env = Astro.locals.runtime.env;
+
 cloudinary.config({
-    cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
-    api_key: import.meta.env.CLOUDINARY_API_KEY,
-    api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
 });
 
 const pageParam = Astro.url.searchParams.get("page") ?? "1";
