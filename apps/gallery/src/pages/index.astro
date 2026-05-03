@@ -25,11 +25,14 @@ const tagsParam = Astro.url.searchParams.get("tags") ?? "";
 const selectedTagsArray = tagsParam ? tagsParam.split(",") : [];
 const camerasParam = Astro.url.searchParams.get("cameras") ?? "";
 const selectedCamerasArray = camerasParam ? camerasParam.split(",") : [];
+const locationsParam = Astro.url.searchParams.get("locations") ?? "";
+const selectedLocationsArray = locationsParam ? locationsParam.split(",") : [];
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
 
 const queryTags = tagsParam ? `tags=${tagsParam}` : "";
 const queryCameras = camerasParam ? `cameras=${camerasParam}` : "";
-const queryParts = [queryTags, queryCameras].filter(Boolean);
+const queryLocations = locationsParam ? `locations=${locationsParam}` : "";
+const queryParts = [queryTags, queryCameras, queryLocations].filter(Boolean);
 const queryStr = queryParts.length > 0 ? `&${queryParts.join("&")}` : "";
 
 const isFlat = viewParam === "flat";
@@ -59,12 +62,16 @@ const allImages: Omit<CloudinaryImage, "src">[] = results.resources.map((img: Cl
 
 const availableTagsSet = new Set<string>();
 const availableCamerasSet = new Set<string>();
+const availableLocationsSet = new Set<string>();
 for (const img of allImages) {
     for (const tag of img.tags) {
         availableTagsSet.add(tag);
     }
     if (img.metadata?.camera) {
         availableCamerasSet.add(img.metadata.camera);
+    }
+    if (img.metadata?.location) {
+        availableLocationsSet.add(img.metadata.location);
     }
 }
 const availableTags = Array.from(availableTagsSet)
@@ -77,11 +84,18 @@ const availableCameras = Array.from(availableCamerasSet)
     .map((c) => ({ label: formatCameraName(c), value: c }));
 const selectedCamerasOptions = selectedCamerasArray.map((c) => ({ label: formatCameraName(c), value: c }));
 
+const availableLocations = Array.from(availableLocationsSet)
+    .sort()
+    .map((l) => ({ label: l, value: l }));
+const selectedLocationsOptions = selectedLocationsArray.map((l) => ({ label: l, value: l }));
+
 const filteredImages = allImages.filter((img) => {
     const matchesTags = selectedTagsArray.length === 0 || selectedTagsArray.every((tag) => img.tags.includes(tag));
     const matchesCameras =
         selectedCamerasArray.length === 0 || selectedCamerasArray.includes(img.metadata?.camera ?? "");
-    return matchesTags && matchesCameras;
+    const matchesLocations =
+        selectedLocationsArray.length === 0 || selectedLocationsArray.includes(img.metadata?.location ?? "");
+    return matchesTags && matchesCameras && matchesLocations;
 });
 
 const pages = calculateMasonryPages(filteredImages, {
@@ -112,7 +126,10 @@ const secureImages: CloudinaryImage[] = paginatedImages.map((img) => ({
     groupTitle: img.context?.group ? (groupTitleMap.get(img.context.group) ?? img.context.group) : undefined,
 }));
 
-const groupMap = new Map<string, { previewImg: (typeof allImages)[0]; tags: Set<string>; cameras: Set<string> }>();
+const groupMap = new Map<
+    string,
+    { previewImg: (typeof allImages)[0]; tags: Set<string>; cameras: Set<string>; locations: Set<string> }
+>();
 for (const img of allImages) {
     if (img.context?.group) {
         const groupId = img.context.group;
@@ -125,28 +142,35 @@ for (const img of allImages) {
             if (img.metadata?.camera) {
                 groupData.cameras.add(img.metadata.camera);
             }
+            if (img.metadata?.location) {
+                groupData.locations.add(img.metadata.location);
+            }
         } else {
             groupMap.set(groupId, {
                 previewImg: img,
                 tags: new Set(img.tags || []),
                 cameras: new Set(img.metadata?.camera ? [img.metadata.camera] : []),
+                locations: new Set(img.metadata?.location ? [img.metadata.location] : []),
             });
         }
     }
 }
 
-const allGroupsList = Array.from(groupMap.entries()).map(([groupId, { previewImg, tags, cameras }]) => ({
+const allGroupsList = Array.from(groupMap.entries()).map(([groupId, { previewImg, tags, cameras, locations }]) => ({
     id: groupId,
     previewSrc: getSignedUrl(previewImg.id, PREVIEW_WIDTH),
     tags: Array.from(tags).sort(),
     cameras: Array.from(cameras),
+    locations: Array.from(locations).sort(),
 }));
 
 const filteredGroupsList = allGroupsList.filter((g) => {
     const matchesTags = selectedTagsArray.length === 0 || selectedTagsArray.every((tag) => g.tags.includes(tag));
     const matchesCameras =
         selectedCamerasArray.length === 0 || selectedCamerasArray.some((cam) => g.cameras.includes(cam));
-    return matchesTags && matchesCameras;
+    const matchesLocations =
+        selectedLocationsArray.length === 0 || selectedLocationsArray.some((loc) => g.locations.includes(loc));
+    return matchesTags && matchesCameras && matchesLocations;
 });
 
 const groupsWithData = filteredGroupsList.map((group) => {
@@ -183,6 +207,8 @@ export const prerender = false;
                 selectedTags={selectedTagsOptions} 
                 availableCameras={availableCameras}
                 selectedCameras={selectedCamerasOptions}
+                availableLocations={availableLocations}
+                selectedLocations={selectedLocationsOptions}
             />
         </div>
         <div slot="flatContent">

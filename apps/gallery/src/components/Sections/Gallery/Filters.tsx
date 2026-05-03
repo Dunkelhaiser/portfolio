@@ -10,11 +10,21 @@ interface TagFilterProps {
     selectedTags: Option[];
     availableCameras: Option[];
     selectedCameras: Option[];
+    availableLocations: Option[];
+    selectedLocations: Option[];
 }
 
-const Filters = ({ availableTags, selectedTags, availableCameras, selectedCameras }: TagFilterProps) => {
+const Filters = ({
+    availableTags,
+    selectedTags,
+    availableCameras,
+    selectedCameras,
+    availableLocations,
+    selectedLocations,
+}: TagFilterProps) => {
     const [value, setValue] = useState<Option[]>(selectedTags);
     const [cameraValue, setCameraValue] = useState<Option[]>(selectedCameras);
+    const [locationValue, setLocationValue] = useState<Option[]>(selectedLocations);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -24,6 +34,10 @@ const Filters = ({ availableTags, selectedTags, availableCameras, selectedCamera
     useEffect(() => {
         setCameraValue(selectedCameras);
     }, [selectedCameras]);
+
+    useEffect(() => {
+        setLocationValue(selectedLocations);
+    }, [selectedLocations]);
 
     const handleApply = () => {
         const url = new URL(window.location.href);
@@ -40,6 +54,12 @@ const Filters = ({ availableTags, selectedTags, availableCameras, selectedCamera
             url.searchParams.delete("cameras");
         }
 
+        if (locationValue.length > 0) {
+            url.searchParams.set("locations", locationValue.map((o) => o.value).join(","));
+        } else {
+            url.searchParams.delete("locations");
+        }
+
         url.searchParams.set("page", "1");
 
         setOpen(false);
@@ -53,9 +73,9 @@ const Filters = ({ availableTags, selectedTags, availableCameras, selectedCamera
                     <Button variant="outline" size="sm">
                         <Filter className="size-4" />
                         Filters
-                        {(selectedTags.length > 0 || selectedCameras.length > 0) && (
+                        {(selectedTags.length > 0 || selectedCameras.length > 0 || selectedLocations.length > 0) && (
                             <span className="ml-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
-                                {selectedTags.length + selectedCameras.length}
+                                {selectedTags.length + selectedCameras.length + selectedLocations.length}
                             </span>
                         )}
                     </Button>
@@ -82,6 +102,15 @@ const Filters = ({ availableTags, selectedTags, availableCameras, selectedCamera
                             defaultOptions={availableCameras}
                             placeholder="Select cameras..."
                             onChange={setCameraValue}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Locations</span>
+                        <MultipleSelector
+                            value={locationValue}
+                            defaultOptions={availableLocations}
+                            placeholder="Select locations..."
+                            onChange={setLocationValue}
                         />
                     </div>
                 </div>
