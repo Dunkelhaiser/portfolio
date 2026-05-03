@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getCollection } from "astro:content";
 import { v2 as cloudinary } from "cloudinary";
+import EmptyState from "@/components/Sections/Gallery/EmptyState.astro";
 import { Filters } from "@/components/Sections/Gallery/Filters";
 import GroupsList from "@/components/Sections/Gallery/Groups/GroupsList.astro";
 import ImagesList from "@/components/Sections/Gallery/Images/ImagesList.astro";
@@ -152,22 +153,30 @@ export const prerender = false;
             <Filters client:load availableTags={availableTags} selectedTags={selectedTagsOptions} />
         </div>
         <div slot="flatContent">
-            <ImagesList
-                images={secureImages}
-                currentPage={flatPage}
-                totalPages={totalFlatPages}
-                paginationNumbers={flatPaginationNumbers}
-                baseUrl={`/?view=flat${queryStr}&page=`}
-            />
+            {secureImages.length > 0 ? (
+                <ImagesList
+                    images={secureImages}
+                    currentPage={flatPage}
+                    totalPages={totalFlatPages}
+                    paginationNumbers={flatPaginationNumbers}
+                    baseUrl={`/?view=flat${queryStr}&page=`}
+                />
+            ) : (
+                <EmptyState itemType="photos" clearUrl="/?view=flat" />
+            )}
         </div>
         <div slot="groupsContent">
-            <GroupsList 
-                groups={paginatedGroups} 
-                currentPage={groupPage} 
-                totalPages={totalGroupPages} 
-                paginationNumbers={groupPaginationNumbers} 
-                baseUrl={`/?view=groups${queryStr}&page=`}
-            />
+            {paginatedGroups.length > 0 ? (
+                <GroupsList 
+                    groups={paginatedGroups} 
+                    currentPage={groupPage} 
+                    totalPages={totalGroupPages} 
+                    paginationNumbers={groupPaginationNumbers} 
+                    baseUrl={`/?view=groups${queryStr}&page=`}
+                />
+            ) : (
+                <EmptyState itemType="groups" clearUrl="/?view=groups" />
+            )}
         </div>
     </ViewTabs>
 </Layout>

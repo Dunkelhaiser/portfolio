@@ -1,0 +1,29 @@
+---
+import { buttonVariants } from "@repo/ui/Button";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@repo/ui/Empty";
+import { FilterX } from "@repo/ui/icons";
+
+interface Props {
+    itemType: string;
+    clearUrl: string;
+}
+
+const { itemType, clearUrl } = Astro.props;
+---
+
+<Empty className="my-12">
+    <EmptyHeader>
+        <EmptyMedia variant="icon">
+            <FilterX />
+        </EmptyMedia>
+        <EmptyTitle>No {itemType} found</EmptyTitle>
+        <EmptyDescription>
+            No {itemType} were found matching your filters.
+        </EmptyDescription>
+    </EmptyHeader>
+    <EmptyContent>
+        <a href={clearUrl} class={buttonVariants({ variant: "outline" })}>
+            Clear all filters
+        </a>
+    </EmptyContent>
+</Empty>
