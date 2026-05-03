@@ -14,6 +14,8 @@ interface TagFilterProps {
     selectedLocations: Option[];
     availableDayparts: Option[];
     selectedDayparts: Option[];
+    availableSeasons: Option[];
+    selectedSeasons: Option[];
 }
 
 const Filters = ({
@@ -25,11 +27,14 @@ const Filters = ({
     selectedLocations,
     availableDayparts,
     selectedDayparts,
+    availableSeasons,
+    selectedSeasons,
 }: TagFilterProps) => {
     const [tagsValue, setTagsValue] = useState<Option[]>(selectedTags);
     const [cameraValue, setCameraValue] = useState<Option[]>(selectedCameras);
     const [locationValue, setLocationValue] = useState<Option[]>(selectedLocations);
     const [daypartValue, setDaypartValue] = useState<Option[]>(selectedDayparts);
+    const [seasonValue, setSeasonValue] = useState<Option[]>(selectedSeasons);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -48,11 +53,16 @@ const Filters = ({
         setDaypartValue(selectedDayparts);
     }, [selectedDayparts]);
 
+    useEffect(() => {
+        setSeasonValue(selectedSeasons);
+    }, [selectedSeasons]);
+
     const handleClear = () => {
         setTagsValue([]);
         setCameraValue([]);
         setLocationValue([]);
         setDaypartValue([]);
+        setSeasonValue([]);
     };
 
     const handleApply = () => {
@@ -82,6 +92,12 @@ const Filters = ({
             url.searchParams.delete("dayparts");
         }
 
+        if (seasonValue.length > 0) {
+            url.searchParams.set("seasons", seasonValue.map((o) => o.value).join(","));
+        } else {
+            url.searchParams.delete("seasons");
+        }
+
         url.searchParams.set("page", "1");
 
         setOpen(false);
@@ -89,10 +105,11 @@ const Filters = ({
     };
 
     const appliedFiltersCount = [
-        selectedTags.length > 0,
-        selectedCameras.length > 0,
-        selectedLocations.length > 0,
-        selectedDayparts.length > 0,
+        tagsValue.length > 0,
+        cameraValue.length > 0,
+        locationValue.length > 0,
+        daypartValue.length > 0,
+        seasonValue.length > 0,
     ].filter(Boolean).length;
 
     return (
@@ -140,6 +157,15 @@ const Filters = ({
                             defaultOptions={availableLocations}
                             placeholder="Select locations..."
                             onChange={setLocationValue}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Season</span>
+                        <MultipleSelector
+                            value={seasonValue}
+                            defaultOptions={availableSeasons}
+                            placeholder="Select season..."
+                            onChange={setSeasonValue}
                         />
                     </div>
                     <div className="space-y-2">

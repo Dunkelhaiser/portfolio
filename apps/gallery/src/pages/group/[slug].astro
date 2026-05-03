@@ -1,7 +1,6 @@
 ---
 /** biome-ignore-all lint/style/useNamingConvention: cloudinary convention */
 import { getEntry } from "astro:content";
-import { Badge } from "@repo/ui/Badge";
 import { buttonVariants } from "@repo/ui/Button";
 import { Calendar, ChevronLeft, MapPin } from "@repo/ui/icons";
 import { v2 as cloudinary } from "cloudinary";
@@ -12,7 +11,7 @@ import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
-import { formatCameraName, getDaypart, unixToDate } from "@/lib/utils";
+import { formatCameraName, getDaypart, getSeason, unixToDate } from "@/lib/utils";
 
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect("/?view=groups");
@@ -36,13 +35,16 @@ const locationsParam = Astro.url.searchParams.get("locations") ?? "";
 const selectedLocationsArray = locationsParam ? locationsParam.split(",") : [];
 const daypartsParam = Astro.url.searchParams.get("dayparts") ?? "";
 const selectedDaypartsArray = daypartsParam ? daypartsParam.split(",") : [];
+const seasonsParam = Astro.url.searchParams.get("seasons") ?? "";
+const selectedSeasonsArray = seasonsParam ? seasonsParam.split(",") : [];
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
 
 const queryTags = tagsParam ? `tags=${tagsParam}` : "";
 const queryCameras = camerasParam ? `cameras=${camerasParam}` : "";
 const queryLocations = locationsParam ? `locations=${locationsParam}` : "";
 const queryDayparts = daypartsParam ? `dayparts=${daypartsParam}` : "";
-const queryParts = [queryTags, queryCameras, queryLocations, queryDayparts].filter(Boolean);
+const querySeasons = seasonsParam ? `seasons=${seasonsParam}` : "";
+const queryParts = [queryTags, queryCameras, queryLocations, queryDayparts, querySeasons].filter(Boolean);
 const queryStr = queryParts.length > 0 ? `&${queryParts.join("&")}` : "";
 
 const searchExpression = `folder:gallery AND context.group=${slug}`;
@@ -70,6 +72,7 @@ const availableTagsSet = new Set<string>();
 const availableCamerasSet = new Set<string>();
 const availableLocationsSet = new Set<string>();
 const availableDaypartsSet = new Set<string>();
+const availableSeasonsSet = new Set<string>();
 
 for (const img of allImages) {
     for (const tag of img.tags) {
@@ -84,6 +87,10 @@ for (const img of allImages) {
     const daypart = getDaypart(img.metadata?.takenAt);
     if (daypart) {
         availableDaypartsSet.add(daypart);
+    }
+    const season = getSeason(img.metadata?.takenAt);
+    if (season) {
+        availableSeasonsSet.add(season);
     }
 }
 
@@ -108,6 +115,12 @@ const availableDayparts = Array.from(availableDaypartsSet)
     .map((d) => ({ label: d, value: d }));
 const selectedDaypartsOptions = selectedDaypartsArray.map((d) => ({ label: d, value: d }));
 
+const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
+const availableSeasons = Array.from(availableSeasonsSet)
+    .sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b))
+    .map((s) => ({ label: s, value: s }));
+const selectedSeasonsOptions = selectedSeasonsArray.map((s) => ({ label: s, value: s }));
+
 const uniqueDates = Array.from(
     new Set(
         allImages
@@ -131,7 +144,9 @@ const filteredImages = allImages.filter((img) => {
         selectedLocationsArray.length === 0 || selectedLocationsArray.includes(img.metadata?.location ?? "");
     const matchesDayparts =
         selectedDaypartsArray.length === 0 || selectedDaypartsArray.includes(getDaypart(img.metadata?.takenAt) ?? "");
-    return matchesTags && matchesCameras && matchesLocations && matchesDayparts;
+    const matchesSeasons =
+        selectedSeasonsArray.length === 0 || selectedSeasonsArray.includes(getSeason(img.metadata?.takenAt) ?? "");
+    return matchesTags && matchesCameras && matchesLocations && matchesDayparts && matchesSeasons;
 });
 
 const pages = calculateMasonryPages(filteredImages, {
@@ -194,6 +209,8 @@ export const prerender = false;
                 selectedLocations={selectedLocationsOptions}
                 availableDayparts={availableDayparts}
                 selectedDayparts={selectedDaypartsOptions}
+                availableSeasons={availableSeasons}
+                selectedSeasons={selectedSeasonsOptions}
             />
         </div>
     </div>

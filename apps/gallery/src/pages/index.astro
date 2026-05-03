@@ -11,7 +11,7 @@ import Layout from "@/layouts/Layout.astro";
 import { getSignedUrl, HIGH_RES_WIDTH, PREVIEW_WIDTH } from "@/lib/cloudinary";
 import { calculateMasonryPages } from "@/lib/masonry";
 import type { CloudinaryImage, CloudinaryResource } from "@/lib/types";
-import { formatCameraName, getDaypart } from "@/lib/utils";
+import { formatCameraName, getDaypart, getSeason } from "@/lib/utils";
 
 cloudinary.config({
     cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
@@ -29,13 +29,16 @@ const locationsParam = Astro.url.searchParams.get("locations") ?? "";
 const selectedLocationsArray = locationsParam ? locationsParam.split(",") : [];
 const daypartsParam = Astro.url.searchParams.get("dayparts") ?? "";
 const selectedDaypartsArray = daypartsParam ? daypartsParam.split(",") : [];
+const seasonsParam = Astro.url.searchParams.get("seasons") ?? "";
+const selectedSeasonsArray = seasonsParam ? seasonsParam.split(",") : [];
 const currentPage = Number.parseInt(pageParam, 10) ?? 1;
 
 const queryTags = tagsParam ? `tags=${tagsParam}` : "";
 const queryCameras = camerasParam ? `cameras=${camerasParam}` : "";
 const queryLocations = locationsParam ? `locations=${locationsParam}` : "";
 const queryDayparts = daypartsParam ? `dayparts=${daypartsParam}` : "";
-const queryParts = [queryTags, queryCameras, queryLocations, queryDayparts].filter(Boolean);
+const querySeasons = seasonsParam ? `seasons=${seasonsParam}` : "";
+const queryParts = [queryTags, queryCameras, queryLocations, queryDayparts, querySeasons].filter(Boolean);
 const queryStr = queryParts.length > 0 ? `&${queryParts.join("&")}` : "";
 
 const isFlat = viewParam === "flat";
@@ -67,6 +70,7 @@ const availableTagsSet = new Set<string>();
 const availableCamerasSet = new Set<string>();
 const availableLocationsSet = new Set<string>();
 const availableDaypartsSet = new Set<string>();
+const availableSeasonsSet = new Set<string>();
 for (const img of allImages) {
     for (const tag of img.tags) {
         availableTagsSet.add(tag);
@@ -80,6 +84,10 @@ for (const img of allImages) {
     const daypart = getDaypart(img.metadata?.takenAt);
     if (daypart) {
         availableDaypartsSet.add(daypart);
+    }
+    const season = getSeason(img.metadata?.takenAt);
+    if (season) {
+        availableSeasonsSet.add(season);
     }
 }
 const availableTags = Array.from(availableTagsSet)
@@ -103,6 +111,12 @@ const availableDayparts = Array.from(availableDaypartsSet)
     .map((d) => ({ label: d, value: d }));
 const selectedDaypartsOptions = selectedDaypartsArray.map((d) => ({ label: d, value: d }));
 
+const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
+const availableSeasons = Array.from(availableSeasonsSet)
+    .sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b))
+    .map((s) => ({ label: s, value: s }));
+const selectedSeasonsOptions = selectedSeasonsArray.map((s) => ({ label: s, value: s }));
+
 const filteredImages = allImages.filter((img) => {
     const matchesTags = selectedTagsArray.length === 0 || selectedTagsArray.every((tag) => img.tags.includes(tag));
     const matchesCameras =
@@ -111,7 +125,9 @@ const filteredImages = allImages.filter((img) => {
         selectedLocationsArray.length === 0 || selectedLocationsArray.includes(img.metadata?.location ?? "");
     const matchesDayparts =
         selectedDaypartsArray.length === 0 || selectedDaypartsArray.includes(getDaypart(img.metadata?.takenAt) ?? "");
-    return matchesTags && matchesCameras && matchesLocations && matchesDayparts;
+    const matchesSeasons =
+        selectedSeasonsArray.length === 0 || selectedSeasonsArray.includes(getSeason(img.metadata?.takenAt) ?? "");
+    return matchesTags && matchesCameras && matchesLocations && matchesDayparts && matchesSeasons;
 });
 
 const pages = calculateMasonryPages(filteredImages, {
@@ -150,6 +166,7 @@ const groupMap = new Map<
         cameras: Set<string>;
         locations: Set<string>;
         dayparts: Set<string>;
+        seasons: Set<string>;
     }
 >();
 for (const img of allImages) {
@@ -157,6 +174,7 @@ for (const img of allImages) {
         const groupId = img.context.group;
         const groupData = groupMap.get(groupId);
         const daypart = getDaypart(img.metadata?.takenAt);
+        const season = getSeason(img.metadata?.takenAt);
         if (groupData) {
             groupData.previewImg = img;
             for (const tag of img.tags || []) {
@@ -171,6 +189,9 @@ for (const img of allImages) {
             if (daypart) {
                 groupData.dayparts.add(daypart);
             }
+            if (season) {
+                groupData.seasons.add(season);
+            }
         } else {
             groupMap.set(groupId, {
                 previewImg: img,
@@ -178,19 +199,21 @@ for (const img of allImages) {
                 cameras: new Set(img.metadata?.camera ? [img.metadata.camera] : []),
                 locations: new Set(img.metadata?.location ? [img.metadata.location] : []),
                 dayparts: new Set(daypart ? [daypart] : []),
+                seasons: new Set(season ? [season] : []),
             });
         }
     }
 }
 
 const allGroupsList = Array.from(groupMap.entries()).map(
-    ([groupId, { previewImg, tags, cameras, locations, dayparts }]) => ({
+    ([groupId, { previewImg, tags, cameras, locations, dayparts, seasons }]) => ({
         id: groupId,
         previewSrc: getSignedUrl(previewImg.id, PREVIEW_WIDTH),
         tags: Array.from(tags).sort(),
         cameras: Array.from(cameras),
         locations: Array.from(locations).sort(),
         dayparts: Array.from(dayparts).sort((a, b) => DAYPART_ORDER.indexOf(a) - DAYPART_ORDER.indexOf(b)),
+        seasons: Array.from(seasons).sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b)),
     })
 );
 
@@ -202,7 +225,8 @@ const filteredGroupsList = allGroupsList.filter((g) => {
         selectedLocationsArray.length === 0 || selectedLocationsArray.some((loc) => g.locations.includes(loc));
     const matchesDayparts =
         selectedDaypartsArray.length === 0 || selectedDaypartsArray.some((dp) => g.dayparts.includes(dp));
-    return matchesTags && matchesCameras && matchesLocations && matchesDayparts;
+    const matchesSeasons = selectedSeasonsArray.length === 0 || selectedSeasonsArray.some((s) => g.seasons.includes(s));
+    return matchesTags && matchesCameras && matchesLocations && matchesDayparts && matchesSeasons;
 });
 
 const groupsWithData = filteredGroupsList.map((group) => {
@@ -243,6 +267,8 @@ export const prerender = false;
                 selectedLocations={selectedLocationsOptions}
                 availableDayparts={availableDayparts}
                 selectedDayparts={selectedDaypartsOptions}
+                availableSeasons={availableSeasons}
+                selectedSeasons={selectedSeasonsOptions}
             />
         </div>
         <div slot="flatContent">
