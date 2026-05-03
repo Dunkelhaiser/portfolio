@@ -12,6 +12,8 @@ interface TagFilterProps {
     selectedCameras: Option[];
     availableLocations: Option[];
     selectedLocations: Option[];
+    availableDayparts: Option[];
+    selectedDayparts: Option[];
 }
 
 const Filters = ({
@@ -21,10 +23,13 @@ const Filters = ({
     selectedCameras,
     availableLocations,
     selectedLocations,
+    availableDayparts,
+    selectedDayparts,
 }: TagFilterProps) => {
     const [tagsValue, setTagsValue] = useState<Option[]>(selectedTags);
     const [cameraValue, setCameraValue] = useState<Option[]>(selectedCameras);
     const [locationValue, setLocationValue] = useState<Option[]>(selectedLocations);
+    const [daypartValue, setDaypartValue] = useState<Option[]>(selectedDayparts);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -39,10 +44,15 @@ const Filters = ({
         setLocationValue(selectedLocations);
     }, [selectedLocations]);
 
+    useEffect(() => {
+        setDaypartValue(selectedDayparts);
+    }, [selectedDayparts]);
+
     const handleClear = () => {
         setTagsValue([]);
         setCameraValue([]);
         setLocationValue([]);
+        setDaypartValue([]);
     };
 
     const handleApply = () => {
@@ -66,6 +76,12 @@ const Filters = ({
             url.searchParams.delete("locations");
         }
 
+        if (daypartValue.length > 0) {
+            url.searchParams.set("dayparts", daypartValue.map((o) => o.value).join(","));
+        } else {
+            url.searchParams.delete("dayparts");
+        }
+
         url.searchParams.set("page", "1");
 
         setOpen(false);
@@ -79,9 +95,15 @@ const Filters = ({
                     <Button variant="outline" size="sm">
                         <Filter className="size-4" />
                         Filters
-                        {(selectedTags.length > 0 || selectedCameras.length > 0 || selectedLocations.length > 0) && (
+                        {(selectedTags.length > 0 ||
+                            selectedCameras.length > 0 ||
+                            selectedLocations.length > 0 ||
+                            selectedDayparts.length > 0) && (
                             <span className="ml-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
-                                {selectedTags.length + selectedCameras.length + selectedLocations.length}
+                                {selectedTags.length +
+                                    selectedCameras.length +
+                                    selectedLocations.length +
+                                    selectedDayparts.length}
                             </span>
                         )}
                     </Button>
@@ -117,6 +139,15 @@ const Filters = ({
                             defaultOptions={availableLocations}
                             placeholder="Select locations..."
                             onChange={setLocationValue}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Time of Day</span>
+                        <MultipleSelector
+                            value={daypartValue}
+                            defaultOptions={availableDayparts}
+                            placeholder="Select time of day..."
+                            onChange={setDaypartValue}
                         />
                     </div>
                 </div>

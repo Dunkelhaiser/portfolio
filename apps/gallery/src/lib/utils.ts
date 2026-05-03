@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noMagicNumbers: numbers are used for time conversions. */
 const secondInMs = 1000;
 
 export const unixToDate = (unixTime: number, time = false) => {
@@ -38,4 +39,17 @@ export const formatCameraName = (camera: string) => {
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ")
     );
+};
+
+export const getDaypart = (unixTime?: number): string | null => {
+    if (!unixTime) return null;
+    const date = new Date(unixTime * secondInMs);
+    const hours = date.getHours();
+
+    if (hours >= 5 && hours < 7) return "Dawn";
+    if (hours >= 7 && hours < 12) return "Morning";
+    if (hours >= 12 && hours < 17) return "Afternoon";
+    if (hours >= 17 && hours < 19) return "Twilight";
+    if (hours >= 19 && hours < 23) return "Evening";
+    return "Night";
 };
