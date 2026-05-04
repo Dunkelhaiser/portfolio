@@ -7,7 +7,7 @@ import { auto as autoQuality } from "@cloudinary/url-gen/qualifiers/quality";
 import type { CloudinaryResourceById } from "./types";
 
 export const PREVIEW_WIDTH = 1280;
-export const HIGH_RES_WIDTH = 1920;
+export const HIGH_RES_WIDTH = 2560;
 
 export const getSignedUrl = async (publicId: string, width: number, cloudName: string, apiSecret: string) => {
     const cld = new Cloudinary({ cloud: { cloudName } });
